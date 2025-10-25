@@ -1,0 +1,10 @@
+.darkveil-canvas {
+    position: absolute;
+    /* top: -110px; */
+    left: 0;
+
+    /* always full-screen visually */
+    object-fit: cover;
+    pointer-events: none;
+    z-index: -1;
+}

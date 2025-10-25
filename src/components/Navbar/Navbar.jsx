@@ -8,7 +8,7 @@ import { FaBars, FaTimes, FaHome, FaUser, FaCode, FaEnvelope } from 'react-icons
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const itemRefs = useRef([]);
-  function handleMenuClicked(){
+  function handleMenuClicked() {
     setMenuOpen(prev => !prev)
     console.log(menuOpen)
   }
@@ -55,7 +55,7 @@ const Navbar = () => {
 
   return (
     <nav>
-      <div className="menu" onClick={() =>handleMenuClicked() }>
+      <div className="menu" onClick={() => handleMenuClicked()}>
         {menuOpen ? (
           <>
             <FaTimes />
@@ -66,8 +66,8 @@ const Navbar = () => {
                   ref={(el) => (itemRefs.current[index] = el)}
                   style={{
                     position: "absolute",
-                    top: "40px",
-                    left: "40px",
+                    top: "0px",
+                    left: "0px",
                     opacity: 0,
                   }}
                 >

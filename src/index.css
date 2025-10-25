@@ -1,20 +1,53 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-@tailwind base;
+@import url('https://fonts.googleapis.com/css2?family=Coral+Pixels&family=Lavishly+Yours&family=Tangerine:wght@400;700&display=swap');
 @tailwind components;
 @tailwind utilities;
 
-
-* {
-  font-family: "Poppins", sans-serif;
+/* 1. Target the overall scrollbar and set its width */
+::-webkit-scrollbar {
+  width: 8px;
+  /* Make it thinner */
+  height: 8px;
+  /* For horizontal scrollbars */
 }
 
-html {
+/* 2. Target the track (the background) */
+::-webkit-scrollbar-track {
+  background: #2d2d2d;
+  /* Dark gray track */
+  border-radius: 10px;
+}
+
+/* 3. Target the thumb (the moving part) and set its color */
+::-webkit-scrollbar-thumb {
+  background-color: #ad6d42;
+  /* Pink/Purple color for the thumb */
+  border-radius: 10px;
+  /* Rounded corners for the thumb */
+  border: 2px solid #2d2d2d;
+  /* Optional: adds a border that makes the thumb look thinner */
+}
+
+/* Optional: change color on hover */
+.thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #e8a6d0;
+}
+
+* {
+
+  padding: 0;
+  margin: 0;
+}
+
+main html {
   scroll-behavior: smooth;
 }
 
 body, #root {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 .liquid-ether-container {
@@ -27,17 +60,24 @@ body, #root {
 
 /* *-----------FaTime & FaBar */
 .icon-wrapper {
+  width: 30px;
+  height: 30px;
+  /* background-color: blue; */
   position: absolute;
-  top: 10px;
-  right: 50px;
+  top: 50%;
+  /* Move the child 50% from top */
+  left: 50%;
+  /* Move the child 50% from left */
+  transform: translate(-50%, -50%);
+  /* Center exactly */
 }
 
 .fabars,
 .fatimes {
   position: absolute;
   z-index: 10;
-  top: 10px;
-  right: 10px;
+  top: 0px;
+  right: 0px;
   transition: all 0.3s ease;
   opacity: 0;
   color: white;
@@ -64,43 +104,168 @@ body, #root {
 
 
 /* *-----------end of fa icons */
+/* * logo and main nav */
+.parent {
+  width: auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  /* max-height: 230px; */
+  overflow: hidden;
+}
+
+.logo-img {
+  width: 30px;
+  margin: 10px 0px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid white;
+  min-width: 5%;
+}
+
+.logo-img img {
+  /* border: 2px solid rgb(255, 255, 255); */
+  filter: contrast(1.0) saturate(1.5);
+  /* width: 50%; */
+  margin-bottom: 5px;
+
+}
+
+/* Middle Content Styles */
+.nav-middle-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.romantic-tagline {
+  font-family: 'Lavishly Yours', cursive;
+  font-size: 2rem;
+  color: white;
+  font-weight: 400;
+}
+
+.wedding-date {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 1px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.main-nav {
+  display: none;
+  /* Start hidden */
+  opacity: 0;
+  transform: translateY(-20px);
+  font-family: "Poppins", sans-serif;
+  /* display: inline-flex; */
+  gap: 30px;
+  font-size: 0.8em;
+  font-weight: 600;
+  padding: 0px 8px;
+  align-items: center;
+  position: relative;
+  width: auto;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+}
+
+.nav-sec {
+  position: relative;
+  display: inline-flex;
+  /* background: rgba(255, 255, 255, 0.08); */
+  /* backdrop-filter: blur(12px); */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.nav-sec a {
+  color: white;
+}
+
+.nav-sec:hover {
+  transform: translateY(-1px) scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  /* gap: 30px; */
+  width: 100%;
+  height: auto;
+  /* background-color: bisque; */
+  /* background: url(https://wallpaperaccess.com/full/21683.jpg) center / cover no-repeat; */
+  position: fixed;
+  top: 0px;
+}
+
+.logotext {
+  display: flex;
+  justify-content: center;
+  color: white;
+  position: relative;
+  font-family: "Tangerine", cursive;
+  font-weight: 700;
+  /* font-size: 1rem; */
+  /* margin-left: 70px; */
+}
+
+.extra {
+  width: 100px;
+  height: 100px;
+  /* background-color: black; */
+}
+
+/* *----------------------------- */
+nav {
+
+  position: relative;
+  display: inline-flex;
+  justify-content: space-around;
+  /* background-color: rgb(235, 1, 110); */
+  width: 100px;
+  height: 100px;
+}
 
 .menu {
-  display: flex;
-  height: 40px;
-  width: 40px;
-  position: absolute;
-  top: 35px;
-  right: 70px;
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  /* overflow: hidden; */
-  background-color: brown;
+  /* width: 50px;
+  height: 50px; */
+  background-color: black;
 }
 
 .menu ul {
+  font-family: "Poppins", sans-serif;
   position: absolute;
-  /* fix to viewport */
-
-  top: 0px;
-  right: 50px;
+  right: 150px;
   width: 0;
-  /* Remove background dimensions */
   height: 0;
   padding: 0;
-  /* margin: 100px; */
+  margin: 0px;
   list-style: none;
   pointer-events: none;
-  background-color: transparent;
-  /* Remove brown background */
+  background-color: brown;
 }
 
-
-
 .li {
-  width: 40px;
-  /* text-align: center;s */
+  /* width: 40px; */
+  text-align: center;
   display: flex;
   /* justify-content: center; */
   align-items: center;
@@ -108,28 +273,30 @@ body, #root {
 }
 
 .html-li {
-  display: flex;
-  width: auto;
-  width: 100px;
-  height: 25px;
-  position: absolute;
-  /* text-align: center;s */
-  background: rgba(255, 255, 255, 0.08);
   /* margin-top: 10px; */
+  /* width: 100px; */
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  white-space: nowrap;
+  height: 45px;
+  position: absolute;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 8px 10px;
   color: white;
   white-space: nowrap;
-  font-size: 1rem;
+  font-size: 0.6rem;
   letter-spacing: 1px;
-  cursor: pointer;
-  pointer-events: auto;
+  cursor: none;
+  pointer-events: none;
 }
 
 .icons {
-  margin: 5px;
+  margin-right: 3px;
 }
 
 .menu ul li:hover {
@@ -140,7 +307,43 @@ body, #root {
 
 a {
   text-decoration: none;
-  color: black;
+  /* color: black; */
 }
 
+
+
 /* *------------------Navamit*/
+/* * main nav */
+/* *--------hero section */
+.canvas-wrapper {
+
+  width: 100vw;
+  /* height: 200px; */
+  /* position: fixed; */
+  top: 0px;
+  overflow: hidden;
+  position: fixed;
+  top: 0px;
+
+}
+
+
+
+h1 {
+  position: absolute;
+  top: 300px;
+  color: white;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.canvas-wrapper-footer {
+  position: fixed;
+  bottom: 0px;
+  transform: rotate(180deg);
+  width: 100vw;
+  /* height: 200px; */
+
+  overflow: hidden;
+
+}
