@@ -2,7 +2,7 @@
     position: absolute;
     /* top: -110px; */
     left: 0;
-
+    height: 15vh;
     /* always full-screen visually */
     object-fit: cover;
     pointer-events: none;

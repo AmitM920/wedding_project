@@ -1,14 +1,14 @@
 import React from 'react'
-import DarkVeil from '/Users//Asus/Desktop/portfolio/src/components/ui//DarkVeil';
+
 
 function Footer() {
   return (
     <>
+      <div className='footer' >
 
-      <div className="canvas-wrapper-footer relative h-[20vh] " >
-        <DarkVeil />
+        Footer Content
+
       </div>
-
     </>
   )
 }

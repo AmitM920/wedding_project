@@ -28,10 +28,6 @@
   /* Optional: adds a border that makes the thumb look thinner */
 }
 
-/* Optional: change color on hover */
-.thin-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #e8a6d0;
-}
 
 * {
 
@@ -105,40 +101,117 @@ body, #root {
 
 /* *-----------end of fa icons */
 /* * logo and main nav */
+.app {
+  display: flex;
+  flex-direction: column;
+}
+
 .parent {
   width: auto;
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
+
   /* max-height: 230px; */
+  /* padding: clamp(1rem, 5vw, 3rem); */
   overflow: hidden;
+  /* min-height: 100vh;s */
+}
+
+/* Force DarkVeil canvas to respect container height */
+.canvas-wrapper canvas.darkveil-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+.canvas-wrapper {
+  order: 1;
+  z-index: 5;
+  width: 100%;
+  height: 20vh;
+  position: sticky;
+  top: 0px;
+  overflow: hidden;
+  /* position: fixed; */
+  top: 0px;
+  z-index: 90;
+  pointer-events: none;
+  /* Smooth transition */
+  transition: all 0.3s ease;
+}
+
+
+
+.logo {
+  order: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* gap: 30px; */
+  width: 100%;
+  z-index: 100;
+  height: 20vh;
+  /* background-color: bisque; */
+  /* background: url(https://wallpaperaccess.com/full/21683.jpg) center / cover no-repeat; */
+  position: fixed;
+  top: 0px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
 }
 
 .logo-img {
-  width: 30px;
-  margin: 10px 0px 10px 10px;
+  /* width: 60px; */
+  margin-left: 25px;
+  /* margin: 3.2vh 0px 0px 0vh; */
+  /* margin: clamp(2.5rem, 2vw, 2rem) 0px; */
   display: flex;
   flex-direction: column;
-  border: 2px solid white;
-  min-width: 5%;
+  border: 1px solid white;
+  padding: 3px;
+  border-radius: 50%;
+  will-change: transform;
+  width: 88px;
+  transform: translateZ(0);
+
 }
 
 .logo-img img {
   /* border: 2px solid rgb(255, 255, 255); */
   filter: contrast(1.0) saturate(1.5);
-  /* width: 50%; */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
   margin-bottom: 5px;
-
+  transform: translateZ(0);
 }
+
+.logotext {
+  display: flex;
+  justify-content: center;
+  color: white;
+  position: relative;
+  font-family: "Tangerine", cursive;
+  font-weight: 300;
+  font-size: 0.9rem;
+  /* margin-left: 70px; */
+}
+
+
 
 /* Middle Content Styles */
 .nav-middle-content {
   display: flex;
+  margin-top: 5px;
   flex-direction: column;
   align-items: center;
   gap: 5px;
   position: absolute;
   left: 50%;
+  top: 3%;
   transform: translateX(-50%);
 }
 
@@ -151,9 +224,12 @@ body, #root {
 
 .wedding-date {
   font-family: 'Poppins', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.8);
   letter-spacing: 1px;
+  position: relative;
+  top: -19px;
+  right: -13px;
 }
 
 .nav-right {
@@ -163,6 +239,7 @@ body, #root {
 }
 
 .main-nav {
+  margin-top: -35px;
   display: none;
   /* Start hidden */
   opacity: 0;
@@ -170,7 +247,9 @@ body, #root {
   font-family: "Poppins", sans-serif;
   /* display: inline-flex; */
   gap: 30px;
-  font-size: 0.8em;
+  /* font-size: 0.8em; */
+  /* Instead of: font-size: 0.8em; */
+  font-size: clamp(0.6rem, 0.8vw, 1rem);
   font-weight: 600;
   padding: 0px 8px;
   align-items: center;
@@ -203,29 +282,7 @@ body, #root {
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  /* gap: 30px; */
-  width: 100%;
-  height: auto;
-  /* background-color: bisque; */
-  /* background: url(https://wallpaperaccess.com/full/21683.jpg) center / cover no-repeat; */
-  position: fixed;
-  top: 0px;
-}
 
-.logotext {
-  display: flex;
-  justify-content: center;
-  color: white;
-  position: relative;
-  font-family: "Tangerine", cursive;
-  font-weight: 700;
-  /* font-size: 1rem; */
-  /* margin-left: 70px; */
-}
 
 .extra {
   width: 100px;
@@ -253,14 +310,18 @@ nav {
 .menu ul {
   font-family: "Poppins", sans-serif;
   position: absolute;
-  right: 150px;
+  right: 250px;
   width: 0;
   height: 0;
   padding: 0;
   margin: 0px;
   list-style: none;
-  pointer-events: none;
-  background-color: brown;
+  /* pointer-events: none; */
+  /* background-color: brown; */
+  background-color: red !important;
+  /* Make it very visible */
+  transition: opacity 0.8s ease !important;
+  /* Add transition to see the change */
 }
 
 .li {
@@ -310,40 +371,347 @@ a {
   /* color: black; */
 }
 
+.nav-compo {
+  position: relative;
+  z-index: 100;
+}
+
+
+/* DEBUG: Add these test styles to see if media queries work */
+/* @media (min-width: 1024px) {
+  .canvas-wrapper::before {
+    content: "Laptop Media Query Active - 1024px+";
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: red;
+    color: white;
+    padding: 5px;
+    z-index: 1000;
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .logo::before {
+    content: "Laptop Range Active - 1024px-1366px";
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: blue;
+    color: white;
+    padding: 5px;
+    z-index: 1000;
+    font-size: 12px;
+  }
+} */
+
+/* ===== MONITOR: 1920x1080 ===== */
+@media (min-width: 1920px) and (min-height: 1080px) {
+  .logo {
+    height: 20vh;
+
+  }
+
+
+
+  .romantic-tagline {
+    margin-top: -22px;
+    font-size: 3.5rem;
+
+  }
+
+  .nav-middle-content {
+    left: 48%;
+  }
+
+  .canvas-wrapper {
+    height: 20vh;
+  }
+
+  .main-nav {
+    height: 95px;
+    padding: 0px 20px;
+    margin-bottom: 2.5dvh;
+  }
+
+  .nav-sec {
+    padding: 15px 40px;
+  }
+
+  .shiny-text {
+    font-size: 4em;
+  }
+
+  .menu ul {
+    right: 700px;
+
+  }
+
+  .fabars, .fatimes {
+    font-size: 50px;
+  }
+
+  .html-li {
+    height: 55px;
+    margin-bottom: 10px;
+  }
+
+  .logo-img {
+    width: 5dvw;
+    margin-left: 2dvw;
+  }
+
+  .menu ul {
+    right: 400px;
+  }
+
+  .shiny-text {
+    font-size: 2rem;
+  }
+
+  .wedding-date {
+    font-size: 1.1rem;
+  }
+}
+
+/* Laptop Screens (when logo height becomes 65px) */
+/* but now showing up for the  .canvas-wrapper
+for the monitor its 20vh i want to increase for the laptop also */
+/* @media (min-width: 1024px) and (max-with:1025px) {
+  .fabars, .fatimes {
+    font-size: 25px;
+  }
+
+  .hero-content {
+    margin-top: -20dvh;
+    left: -14px;
+
+  }
+
+  .shiny-text {
+    font-size: 1.6rem;
+  }
+
+  .menu ul {
+    right: 160px;
+  }
+
+  .html-li {
+    height: 25px;
+    margin-bottom: 5px;
+  }
+
+  .canvas-wrapper {
+    height: 18vh !important;
+  }
+
+  .logo {
+    height: 18vh;
+  }
+
+  .logo-img {
+    width: 88px;
+    margin-left: 15px;
+  }
+
+  .romantic-tagline {
+    margin-top: -15px;
+    font-size: 1.9rem;
+  }
+
+  .main-nav {
+    height: 44px;
+  }
+} */
+
+
+
+
+
 
 
 /* *------------------Navamit*/
-/* * main nav */
-/* *--------hero section */
-.canvas-wrapper {
-
-  width: 100vw;
-  /* height: 200px; */
-  /* position: fixed; */
-  top: 0px;
-  overflow: hidden;
-  position: fixed;
-  top: 0px;
+/* *-----footer -------------*/
+.footer {
+  order: 4;
+  height: 5000px;
 
 }
 
 
+/* logo img */
+@media (min-width: 1536px) {
+  .x .c1-g {
+    font-size: 18px;
+  }
+}
 
-h1 {
-  position: absolute;
-  top: 300px;
-  color: white;
-  z-index: 5;
+@media (min-width: 1280px) {
+  .x .c1-f {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .x .c1-3s {
+    max-height: 88px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .x .c1-3r {
+    width: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .x .c1-3q {
+    height: 88px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .x .c1-e {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .x .c1-d {
+    font-size: 16px;
+  }
+}
+
+.x .c1-3a {
+  border-radius: 0px;
+}
+
+.x .c1-39 {
+  transition: max-height .5s;
+}
+
+.x .c1-38 {
+  height: 80px;
+}
+
+.x .c1-37 {
+  object-fit: contain;
+}
+
+.x .c1-36 {
+  aspect-ratio: 1 / 1;
+}
+
+.x .c1-35 {
+  vertical-align: middle;
+}
+
+.x .c1-34 {
+  margin-right: auto;
+}
+
+.x .c1-33 {
+  margin-left: auto;
+}
+
+.x .c1-31 {
+  padding-left: 0px;
+}
+
+.x .c1-30 {
+  padding-bottom: 0px;
+}
+
+.x .c1-2z {
+  padding-right: 0px;
+}
+
+.x .c1-2y {
+  padding-top: 0px;
+}
+
+.x .c1-2s {
+  max-width: 100%;
+}
+
+.x .c1-27 {}
+
+.x .c1-21 {
+  margin-bottom: 0px;
+}
+
+.x .c1-1z {
+  margin-top: 0px;
+}
+
+.x .c1-1q {
+  background-color: transparent;
+}
+
+.x .c1-c {
+  font-size: 16px;
+}
+
+.x .c1-b {
+  font-family: 'Source Sans Pro', arial, sans-serif;
+}
+
+.x .c1-4 {
+  width: 100%;
+}
+
+.x .c1-2 {
+  text-transform: none;
+}
+
+.x .c1-1 {
+  letter-spacing: normal;
+}
+
+.x-el-img {
+  vertical-align: middle;
+  border: 0;
+}
+
+.x *, .x :after, .x :before {
+  box-sizing: inherit;
+}
+
+user agent stylesheet img {
+  overflow-clip-margin: content-box;
+  overflow: clip;
+}
+
+.x .c1-2v {
+  font-weight: inherit;
+}
+
+.x .c1-2u {
+  color: rgb(255, 240, 240);
+}
+
+.x .c1-2n {
   cursor: pointer;
 }
 
-.canvas-wrapper-footer {
-  position: fixed;
-  bottom: 0px;
-  transform: rotate(180deg);
-  width: 100vw;
-  /* height: 200px; */
+.x .c1-2l {
+  word-wrap: break-word;
+}
 
-  overflow: hidden;
+.x .c1-2j {
+  text-transform: inherit;
+}
 
+.x .c1-2i {
+  letter-spacing: inherit;
+}
+
+.x .c1-2a {
+  overflow-wrap: break-word;
+}
+
+.x-el-a {
+  background-color: transparent;
+  color: inherit;
 }

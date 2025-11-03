@@ -29,3 +29,17 @@
 .shiny-text.disabled {
     animation: none;
 }
+
+@media (min-width: 1920px) and (min-height: 1080px) {
+    .shiny-text {
+        font-size: 2rem;
+    }
+}
+
+@media (max-height: 800px), (max-width: 1366px) {
+    .shiny-text {
+        font-size: 1.3rem;
+        color: #ffffffe0;
+        text-shadow: 3px 2px black;
+    }
+}
