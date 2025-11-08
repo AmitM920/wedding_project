@@ -1,0 +1,33 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <h1>📁 Bulk Image Upload</h1>
+  <p>Select multiple images and they will be automatically added to your gallery.</p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div style="margin: 20px 0;">
+      <label><strong>Category:</strong></label><br />
+      {{ form.category }}
+    </div>
+
+    <div style="margin: 20px 0;">
+      <label><strong>Images (select multiple):</strong></label><br />
+      <input type="file" name="images" multiple style="margin: 10px 0;" />
+      <p style="color: #666; font-size: 14px;">Hold Ctrl/Cmd to select multiple images</p>
+    </div>
+
+    <div style="margin: 20px 0;">
+      <label>
+        {{ form.is_featured }}
+        <strong>Mark all as Featured</strong>
+      </label>
+    </div>
+
+    <div style="margin: 20px 0;">
+      <input type="submit" value="🚀 Upload All Images" style="background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;" />
+      <a href="{% url 'admin:gallery_weddingimage_changelist' %}" style="margin-left: 10px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px;">Cancel</a>
+    </div>
+  </form>
+{% endblock %}
