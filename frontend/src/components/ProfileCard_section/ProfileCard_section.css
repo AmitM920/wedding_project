@@ -1,0 +1,86 @@
+.parent_couple_card {
+    order: 4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2rem);
+    padding: clamp(0.5rem, 4vw, 9rem) 0px;
+    margin: clamp(1rem, 2vw, 4rem);
+    width: min(97%, 98%);
+    margin-inline: auto;
+    border: 2px solid rgba(240, 248, 255, 0.3);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    position: relative;
+}
+
+.mid-content {
+    color: white;
+    order: 4;
+    border-radius: 10px;
+    text-align: center;
+    width: min(1440px, 90%);
+    margin-inline: auto;
+    margin-top: clamp(1rem, 2vw, 3rem);
+    margin-bottom: clamp(1rem, 2vw, 3rem);
+    overflow: visible;
+    opacity: 1;
+    transform: none;
+    position: relative;
+    z-index: 2;
+}
+
+/* Responsive layout */
+@media (max-width: 1200px) {
+    .parent_couple_card {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem 0;
+    }
+
+    .mid-content {
+        order: 2;
+        width: 95%;
+        margin: 1rem auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .parent_couple_card {
+        margin: 0.5rem;
+        width: calc(100% - 1rem);
+        gap: 1rem;
+        border-radius: 10px;
+    }
+
+    .mid-content {
+        margin: 0.5rem auto;
+        width: 98%;
+    }
+}
+
+/* Add some decorative elements */
+.parent_couple_card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    border-radius: 17px;
+    z-index: -1;
+    opacity: 0.3;
+    animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}

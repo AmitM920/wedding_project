@@ -1,0 +1,14 @@
+/* Hide the "Made with Unicorn Studio" badge */
+.unicorn-container a[href*="unicorn.studio"] {
+    display: none !important;
+}
+
+/* Alternative: Hide any anchor tags inside unicorn containers */
+.unicorn-container a {
+    display: none !important;
+}
+
+/* Ensure the canvas doesn't have extra bottom padding */
+.unicorn-container canvas {
+    display: block;
+}
