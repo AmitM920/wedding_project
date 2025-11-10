@@ -1,4 +1,0 @@
- const radius = 320;
-        const startAngle = -160;
-        const endAngle = -280;
-        const angleStep = (endAngle - startAngle) / (Listitems.length - 1);
