@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { HERO_IMAGES, Card_Images } from '../../../assets/config/Full_images';
 import CardSwap, { Card } from '../../ui/CardSwap'
 import './HeroSection.css';
+import Particles from '../../ui/Particles';
 
 const Full_HeroSection = memo(() => {
     const heroImage = HERO_IMAGES.PRE_WEDDING; // Choose one image
@@ -11,15 +12,15 @@ const Full_HeroSection = memo(() => {
         <section className="hero-section">
             {/* Single Background Image */}
             <div className="hero-background">
-                <img
+                {/* <img
                     className="hero-bg-image"
                     src={heroImage.src}
                     alt={heroImage.title}
                     fetchPriority="high"
                     loading="eager"
-                    width="1920"
-                    height="1080"
-                />
+
+                /> */}
+                <Particles />
             </div>
 
             {/* CardSwap */}

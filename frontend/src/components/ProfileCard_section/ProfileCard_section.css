@@ -35,7 +35,7 @@
 
 .mid-content {
     color: white;
-    order: 4;
+    order: 6;
     border-radius: clamp(8px, 1.5vw, 15px);
     text-align: center;
     width: auto;
@@ -130,3 +130,5 @@
     opacity: 0.3;
 
 }
+
+

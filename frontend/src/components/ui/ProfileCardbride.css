@@ -35,9 +35,9 @@
     /* Hint for browser */
     backface-visibility: hidden;
     /* GPU acceleration */
-    order: 5;
+    order: 7;
     margin-right: 50px;
-    order: 4;
+
     z-index: 5;
     right: 350px;
     transition: 600ms ease;
@@ -54,6 +54,7 @@
 .pc-card-wrapper_.show {
     opacity: 1;
     translate: 0;
+    order: 7;
     transition: 600ms ease;
 }
 

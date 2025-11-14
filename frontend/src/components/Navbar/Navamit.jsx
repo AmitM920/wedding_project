@@ -375,7 +375,7 @@ import { ScrollTrigger } from "gsap/all";
 import { FaBars, FaTimes } from "react-icons/fa";
 import ShinyText from "../../components/ui/shiny-text"
 import BlurText from "../../components/ui/BlurText";
-import DarkVeil from '../../components/ui//DarkVeil';
+// import DarkVeil from '../../components/ui//DarkVeil';
 import Timer from "../Timer/Timer";
 import logo from "../../assets/images/sections/logo.svg"
 
@@ -463,15 +463,10 @@ function Navamit() {
 
         const introTl = gsap.timeline();
         introTl.to("body", {
-            backgroundColor: "white",
+            backgroundColor: "black",
             duration: 1.5,
             ease: "power2.out",
         }).fromTo(
-            ".DarkVeil, .darkveil-bg, .darkveil-canvas",
-            { opacity: 0, scale: 1.05 },
-            { opacity: 1, scale: 1, duration: 2, ease: "power2.out" },
-            0.3
-        ).fromTo(
             ".logo-img",
             { opacity: 0, y: 20 },
             { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" },
@@ -550,9 +545,7 @@ function Navamit() {
 
     return (
         <div className="parent">
-            <div className="canvas-wrapper relative h-[17vh]">
-                <DarkVeil />
-            </div>
+
             <div className="logo">
                 <div className="logo-img">
                     <img src={logo} alt="logo" />

@@ -18,7 +18,7 @@ const ProfileCardComponent = ({
     behindGradient,
     innerGradient,
     showBehindGradient = true,
-    className = "pc-card-wrapper_q",
+    className = "",
     enableTilt = true,
     enableMobileTilt = false,
     mobileTiltSensitivity = 5,
