@@ -26,13 +26,19 @@
     --sunpillar-clr-5: var(--sunpillar-5);
     --sunpillar-clr-6: var(--sunpillar-6);
     --card-radius: 30px;
+    --behind-gradient: radial-gradient(farthest-side circle at var(--pointer-x) var(--pointer-y), hsla(266, 100%, 90%, var(--card-opacity)) 4%, hsla(266, 50%, 80%, calc(var(--card-opacity)*0.75)) 10%, hsla(266, 25%, 70%, calc(var(--card-opacity)*0.5)) 50%, hsla(266, 0%, 60%, 0) 100%), radial-gradient(35% 52% at 55% 20%, #00ffaac4 0%, #073aff00 100%), radial-gradient(100% 100% at 50% 50%, #00c1ffff 1%, #073aff00 76%), conic-gradient(from 124deg at 50% 50%, #c137ffff 0%, #07c6ffff 40%, #07c6ffff 60%, #c137ffff 100%);
 }
 
 .pc-card-wrapper {
+    will-change: transform;
+    /* Hint for browser */
+    backface-visibility: hidden;
+    /* GPU acceleration */
     margin-left: 50px;
     order: 4;
-    opacity: 0;
-
+    opacity: 1;
+    z-index: 5;
+    left: 350px;
     transition: 600ms ease;
     /* width: 18svw;
     height: 47svh; */
@@ -111,7 +117,7 @@
     display: grid;
 
 
-    aspect-ratio: 0.718;
+    aspect-ratio: 0.6;
     border-radius: var(--card-radius);
     position: relative;
     background-blend-mode: color-dodge, normal, normal, normal;

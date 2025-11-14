@@ -1,14 +1,14 @@
 // Import your actual images
 
-import pre_wedding from '../images/hero/pre-wedding_full.jpg';
-import ceremony from '../images/hero/ceremony_full.jpg';
+import pre_wedding from '../images/hero/pre-wedding_full.webp';
+import ceremony from '../images/hero/ceremony_full.webp';
 // Import card images directly
-import card1 from '../images/hero/card-pics/1.JPG';
-import card2 from '../images/hero/card-pics/2.JPG';
-import card3 from '../images/hero/card-pics/3.JPG';
-import card4 from '../images/hero/card-pics/4.JPG';
-import card5 from '../images/hero/card-pics/5.JPG';
-import card6 from '../images/hero/card-pics/6.JPG';
+import card1 from '../images/hero/card-pics/1.webp';
+import card3 from '../images/hero/card-pics/3.webp';
+import card2 from '../images/hero/card-pics/2.webp';
+import card4 from '../images/hero/card-pics/4.webp';
+import card5 from '../images/hero/card-pics/5.webp';
+
 
 // Hero Section Images
 export const HERO_IMAGES = {
@@ -54,9 +54,7 @@ export const Card_Images = {
     5: {
         src: card5
     },
-    6: {
-        src: card6
-    }
+
 }
 // Export all images for easy access
 export const ALL_IMAGES = {

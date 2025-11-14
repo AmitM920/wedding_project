@@ -29,15 +29,16 @@ const placeNow = (el, slot, skew) =>
 const CardSwap = ({
     width = 500,
     height = 400,
-    cardDistance = 60,
-    verticalDistance = 75,
-    delay = 5000,
-    pauseOnHover = false,
+    cardDistance = 60, // ✅ KEEP YOUR VALUE
+    verticalDistance = 75, // ✅ KEEP YOUR VALUE
+    delay = 5000, // ✅ KEEP YOUR VALUE
+    pauseOnHover = true,
     onCardClick,
     skewAmount = 1,
-    easing = 'elastic',
+    easing = 'elastic', // ✅ KEEP YOUR VALUE
     children
 }) => {
+    // ✅ KEEP YOUR ORIGINAL CONFIG
     const config =
         easing === 'elastic'
             ? {
@@ -69,14 +70,16 @@ const CardSwap = ({
     const tlRef = useRef(null);
     const intervalRef = useRef();
     const container = useRef(null);
+    const isAnimating = useRef(false); // 🚀 ONLY ADD THIS - prevents overlapping animations
 
     useEffect(() => {
         const total = refs.length;
         refs.forEach((r, i) => placeNow(r.current, makeSlot(i, cardDistance, verticalDistance, total), skewAmount));
 
         const swap = () => {
-            if (order.current.length < 2) return;
+            if (order.current.length < 2 || isAnimating.current) return; // 🚀 ADD THIS CHECK
 
+            isAnimating.current = true; // 🚀 ADD THIS
             const [front, ...rest] = order.current;
             const elFront = refs[front].current;
             const tl = gsap.timeline();
@@ -129,6 +132,7 @@ const CardSwap = ({
 
             tl.call(() => {
                 order.current = [...rest, front];
+                isAnimating.current = false; // 🚀 ADD THIS
             });
         };
 

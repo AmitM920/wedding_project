@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 import ProfileCard from '../ui/ProfileCardComponent'
 import ProfileCardbride from '../ui/ProfileCardComponentBride'
 import './ProfileCard_section.css'
@@ -8,10 +8,12 @@ import iconPattern from "../../assets/demo/iconpattern.png";
 import grainTexture from "../../assets/demo/grain.webp";
 import Mid_compo from './Mid_compo';
 
-function ProfileCard_section() {
+
+const ProfileCard_section = memo(function ProfileCard_section() {
   useEffect(() => {
     console.log('ProfileCard_section rendered');
   });
+
   return (
     <div className='parent_couple_card'>
       <ProfileCard
@@ -30,6 +32,8 @@ function ProfileCard_section() {
 
       <div className='mid-content'>
         <Mid_compo></Mid_compo>
+        {/* <Embed></Embed> */}
+
       </div>
 
       <ProfileCardbride
@@ -46,7 +50,9 @@ function ProfileCard_section() {
         enableMobileTilt={true}
       />
     </div>
+
+
   )
-}
+});
 
 export default ProfileCard_section
