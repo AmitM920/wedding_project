@@ -1,6 +1,6 @@
 import React from 'react'
 import { apiServices } from '../../services/api' // Changed from apiservices to apiServices
-import './Footer.css'
+import './footer.css'
 
 function Footer() {
   const [backendStatus, setBackendStatus] = React.useState('Checking...')
