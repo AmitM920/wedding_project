@@ -12,15 +12,15 @@ const Full_HeroSection = memo(() => {
         <section className="hero-section">
             {/* Single Background Image */}
             <div className="hero-background">
-                {/* <img
+                <img
                     className="hero-bg-image"
                     src={heroImage.src}
                     alt={heroImage.title}
                     fetchPriority="high"
                     loading="eager"
 
-                /> */}
-                <Particles />
+                />
+                {/* <Particles /> */}
             </div>
 
             {/* CardSwap */}

@@ -85,7 +85,7 @@ const Timer = memo(function Timer() {
 
     // ✅ Memoized time formatter
     const getFormattedTime = useCallback((milliseconds) => {
-        if (isEventPassed) return "Our Special Day! 💑";
+        if (isEventPassed) return "~~~~~~~~~~~~~~~~~~~~~~~~";
         if (milliseconds === 0) return "Loading...";
 
         const total_seconds = Math.floor(milliseconds / 1000);

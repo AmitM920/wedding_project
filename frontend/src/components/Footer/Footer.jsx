@@ -1,29 +1,26 @@
 import React from 'react'
-import { apiservices } from '../../services/api'
+import { apiServices } from '../../services/api' // Changed from apiservices to apiServices
+import './Footer.css'
 
 function Footer() {
-  // Changed from "message" to "djangoMessage" to avoid confusion
-  const [djangoMessage, setDjangoMessage] = React.useState('Waiting for Django...')
+  const [backendStatus, setBackendStatus] = React.useState('Checking...')
 
   React.useEffect(() => {
-    apiservices.helloDjango()
-      .then(data => {
-        // data.message comes from Django, we store it in djangoMessage
-        setDjangoMessage(data.message)
-      })
-      .catch(error => {
-        setDjangoMessage('Django is sleeping 😴')
-      })
+    apiServices.helloDjango() // Changed from apiservices to apiServices
+      .then(data => setBackendStatus(`✅ ${data.message}`))
+      .catch(() => setBackendStatus('❌ Backend offline'))
   }, [])
 
   return (
-    <>
-      <div className='footer'>
-        {/* Now showing djangoMessage instead of message */}
-        <p>Django says: <strong>{djangoMessage}</strong></p>
-        <p>Footer Content</p>
+    <footer className='footer'>
+      <div className="backend-status">
+        <p>{backendStatus}</p>
       </div>
-    </>
+      <div className="footer-content">
+        <p>© 2025 Wedding Photography. All rights reserved.</p>
+        <p className="tagline">Capturing moments that last forever 💕</p>
+      </div>
+    </footer>
   )
 }
 

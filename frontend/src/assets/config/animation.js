@@ -6,7 +6,10 @@ export function observeElements(selector, callback, options = {}) {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
-                callback(entry.target);
+                // Only call callback if it's a function
+                if (typeof callback === 'function') {
+                    callback(entry.target);
+                }
                 entry.target.classList.add("show")
             }
             else {

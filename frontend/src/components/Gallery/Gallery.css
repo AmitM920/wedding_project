@@ -1,0 +1,27 @@
+.GalleryParent {
+    --gradient-opacity: 0;
+    opacity: 1;
+    /* background: black; */
+    /* backdrop-filter: blur(20px); */
+    /* Solid black background */
+    position: relative;
+}
+
+.GalleryParent::before {
+    content: '';
+    background: linear-gradient(0deg,
+            #000000 0%,
+            #000000 20%,
+            #333333 30%,
+            #666666 60%,
+            #ffffff 80%,
+            #000000 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    opacity: var(--gradient-opacity);
+    transition: opacity 0.3s ease;
+}

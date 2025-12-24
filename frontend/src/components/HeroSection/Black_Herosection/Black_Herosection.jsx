@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { HERO_IMAGES, Card_Images } from '../../../assets/config/Black_images';
 import CardSwap, { Card } from '../../ui/CardSwap'
-import './HeroSection.css';
+import './Black_HeroSection.css';
 
 const Black_HeroSection = () => {
     const [currentImageIndex, setCurrentImageIndex] = useState(0);// Tracks which image is currently showing

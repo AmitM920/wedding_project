@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Renderer, Camera, Geometry, Program, Mesh } from 'ogl';
 
 import './Particles.css';
+import Full_HeroSection from '../HeroSection/Full_Herosection/Full_Herosection';
 
 const defaultColors = ['#ffffff', '#ffffff', '#ffffff'];
 
@@ -232,7 +233,9 @@ const Particles = ({
     disableRotation
   ]);
 
-  return <div ref={containerRef} className={`particles-container ${className}`} />;
+  return <div ref={containerRef} className={`particles-container ${className}`} >
+
+  </div>;
 };
 
 export default Particles;

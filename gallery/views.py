@@ -23,7 +23,11 @@ class WeddingImageViewSet(viewsets.ModelViewSet):
     serializer_class = WeddingImageSerializer
     filter_backends = [DjangoFilterBackend]  # 🆕 Enable filtering
     filterset_fields = ['category', 'is_featured']  # 🆕 Filter by these fields
-    
+    def get_serializer_context(self):
+        # Pass request to serializer for absolute URLs
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
     def get_queryset(self):
         # 🆕 Advanced query optimization
         queryset = WeddingImage.objects.all().select_related()

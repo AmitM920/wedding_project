@@ -59,13 +59,15 @@ MIDDLEWARE = [
 
 # CORS Configuration (Important for React-Django connection)
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React default port
+   "http://localhost:3000",  # React development server
     "http://127.0.0.1:3000",
+    "http://localhost:5173",  # Vite
+    "http://127.0.0.1:5173",
 ]
 
 # Or allow all during development (easier)
 CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOW_CREDENTIALS = True
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
@@ -143,7 +145,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For production
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # For development
+]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -156,3 +161,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Update ALLOWED_HOSTS for development
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
+
+# Quick fix for bulk upload - add these lines
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800      # 50 MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240       # More form fields
+DATA_UPLOAD_MAX_NUMBER_FILES = 1000         # More files
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800      # 50 MB

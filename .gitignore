@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+media/           # Django uploaded files
+*.sqlite3       # Database files
+__pycache__/    # Python cache
+*.pyc
+.env            # Environment variables
+.vite/          # Vite cache
+node_modules/   # Frontend dependencies
+pre-wedding-pics/ # Local images
