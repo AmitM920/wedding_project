@@ -3,9 +3,7 @@ import { useRef, useState, useCallback, useMemo } from "react";
 
 import { HERO_IMAGES, Card_Images } from '../../../assets/config/Full_images';
 import CardSwap, { Card } from '../../ui/CardSwap'
-import './BlackStar_HeroSection.css';
-import Particles from '../../ui/Particles';
-import AnimatedContent from '../../ui/AnimatedContent';
+import './BlackStar_Herosection.css';
 
 
 
