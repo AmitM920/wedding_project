@@ -14,7 +14,6 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
 from django.contrib import admin
 from django.conf.urls.static import static
 from django.urls import path, include
@@ -22,12 +21,10 @@ from gallery.views import hello_world
 from django.views.generic import RedirectView
 from django.conf import settings
 
-
-
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('gallery/', include('gallery.urls')),
-    path('', RedirectView.as_view(url='/gallery/hello/')),
+    path('api/gallery/', include('gallery.urls')),  # ADD '/api/' here
+    path('', RedirectView.as_view(url='/api/gallery/hello/')),  # Update redirect too
 ]
 
 # Serve media files during development
