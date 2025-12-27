@@ -1,0 +1,348 @@
+/* Reduce blur effects on low-end devices */
+@media (max-width: 1024px) {
+    .parent_couple_card {
+        backdrop-filter: blur(10px);
+        /* Reduced from 20px */
+    }
+}
+
+
+
+.parent_couple_card {
+    overflow: hidden;
+    --gradient-opacity: 0;
+    opacity: 1;
+    /* order: 4; */
+    display: flex;
+    /* height: 100vh; */
+    align-items: center;
+    gap: clamp(1rem, 3vw, 3rem);
+    padding: clamp(0.5rem, 2vw, 6rem) clamp(1rem, 5vw, 4rem);
+    margin: clamp(1rem, 0vw, 15rem) auto 6rem auto !important;
+    width: min(1080px, 95vw);
+    border: 2px solid rgba(240, 248, 255, 0.3);
+    border-radius: clamp(12px, 2vw, 20px);
+    background: rgba(15, 15, 25, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.parent_couple_card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #000000, #4d5050, #605e5e, #494d4b, #000000);
+    border-radius: inherit;
+    /* Match parent border radius */
+    z-index: -1;
+    opacity: var(--gradient-opacity);
+
+    transition: opacity 0.3s ease;
+}
+
+.mid-content {
+    overflow-x: hidden;
+    color: white;
+    border-radius: clamp(8px, 1.5vw, 15px);
+    text-align: center;
+    width: 100%;
+    /* height: 0px; */
+    /* max-width: 1200px; */
+    /* margin: clamp(1rem, 2vw, 3rem) auto; */
+    overflow: visible;
+    opacity: 1;
+    transform: none;
+    position: relative;
+    z-index: 2;
+}
+
+
+
+/* Large desktops (1920px and above) */
+
+@media (min-width: 1920px) {
+    .parent_couple_card {
+        width: min(100vw, 85vw);
+        gap: 4rem;
+        /* Fixed value for large screens */
+        padding: 6rem 4rem;
+        /* Fixed padding for consistency */
+    }
+
+    .mid-content {
+        width: min(1600px, 88%);
+        margin: 3rem auto;
+        /* Fixed margin */
+    }
+}
+
+/* Tablets (768px - 1199px) */
+@media (max-width: 1199px) {
+    .parent_couple_card {
+        flex-direction: column;
+        gap: clamp(1.5rem, 4vw, 3rem);
+        padding: clamp(1.5rem, 4vw, 4rem) clamp(1rem, 2vw, 2rem);
+        width: min(1000px, 95vw);
+    }
+
+    .mid-content {
+        order: 2;
+        width: 95%;
+        margin: clamp(0.5rem, 2vw, 1.5rem) auto;
+    }
+}
+
+/* Mobile phones (480px - 767px) */
+@media (max-width: 767px) {
+    .parent_couple_card {
+        margin: 0.75rem auto;
+        width: calc(100vw - 1.5rem);
+        gap: 1.25rem;
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+    }
+
+    .mid-content {
+        margin: 0.75rem auto;
+        width: 98%;
+        border-radius: 10px;
+    }
+}
+
+/* Small mobile phones (below 480px) */
+@media (max-width: 479px) {
+    .parent_couple_card {
+        margin: 0.5rem auto;
+        width: calc(100vw - 1rem);
+        gap: 1rem;
+        padding: 1.25rem 0.75rem;
+        border-radius: 10px;
+    }
+
+    .mid-content {
+        margin: 0.5rem auto;
+        width: 99%;
+        border-radius: 8px;
+    }
+}
+
+/* Decorative elements */
+
+.css-8xicfw-MuiTypography-root-MuiTimelineOppositeContent-root {
+    padding-right: 8px !important;
+}
+
+/* ** */
+/* Ensure connectors are properly aligned */
+.MuiTimelineSeparator-root {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+/* Make connectors stretch properly */
+.MuiTimelineConnector-root {
+    flex-grow: 1 !important;
+    min-height: 30px !important;
+}
+
+/* Ensure all timeline items have same connector spacing */
+.MuiTimelineItem-root {
+    align-items: center !important;
+}
+
+/* Remove any conflicting animations on connectors */
+.timeline-connector {
+    transform: scaleY(1) !important;
+}
+
+/* ** */
+
+/* ===== TIMELINE ANIMATIONS ===== */
+/* Base timeline item - hidden initially */
+.timeline-item {
+    opacity: 0;
+    transform: translateY(40px);
+    transition:
+        opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1) var(--item-delay, 0.2s),
+        transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) var(--item-delay, 0.2s);
+}
+
+/* When element is in viewport */
+.timeline-item.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Timeline dot animation */
+.timeline-dot {
+    transform: scale(0);
+    transition:
+        transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55) calc(var(--item-delay, 0.2s) + 0.3s),
+        background-color 0.3s ease;
+    z-index: 2;
+}
+
+.timeline-item.show .timeline-dot {
+    transform: scale(1);
+}
+
+/* Connector line animation */
+.timeline-connector {
+    transform: scaleY(0);
+    transform-origin: var(--connector-origin, top);
+    transition: transform 0.8s ease calc(var(--item-delay, 0.2s) + 0.3s);
+}
+
+.timeline-item.show .timeline-connector {
+    transform: scaleY(1);
+}
+
+/* Set connector origins */
+.timeline-item:first-child .timeline-connector:first-of-type {
+    --connector-origin: bottom;
+}
+
+.timeline-item:last-child .timeline-connector:last-of-type {
+    --connector-origin: top;
+}
+
+/* Content animation */
+.timeline-content-inner {
+    opacity: 0;
+    transform: translateX(var(--content-offset, 30px));
+    transition:
+        opacity 0.5s ease calc(var(--item-delay, 0.2s) + 0.5s),
+        transform 0.5s ease calc(var(--item-delay, 0.2s) + 0.5s);
+}
+
+.timeline-item.show .timeline-content-inner {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Alternating content offsets */
+.timeline-item:nth-child(odd) .timeline-content-inner {
+    --content-offset: -30px;
+}
+
+.timeline-item:nth-child(even) .timeline-content-inner {
+    --content-offset: 30px;
+}
+
+/* Text staggered animation */
+.timeline-content-inner>* {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+        opacity 0.4s ease calc(var(--item-delay, 0.2s) + var(--text-index, 0) * 0.1s + 0.6s),
+        transform 0.4s ease calc(var(--item-delay, 0.2s) + var(--text-index, 0) * 0.1s + 0.6s);
+}
+
+.timeline-item.show .timeline-content-inner>* {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Apply text-index for staggered effect */
+.timeline-content-inner>*:nth-child(1) {
+    --text-index: 0;
+}
+
+.timeline-content-inner>*:nth-child(2) {
+    --text-index: 1;
+}
+
+.timeline-content-inner>*:nth-child(3) {
+    --text-index: 2;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .MuiTimelineContent-root {
+        width: 40% !important;
+        min-width: 250px !important;
+    }
+
+    .MuiTimelineItem-root {
+        min-height: 150px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .MuiTimelineContent-root {
+        width: 80% !important;
+        min-width: unset !important;
+        max-width: 100% !important;
+        padding: 8px !important;
+        margin-top: 0 !important;
+    }
+
+    .MuiTimelineItem-root:nth-child(odd) .MuiTimelineContent-root,
+    .MuiTimelineItem-root:nth-child(even) .MuiTimelineContent-root {
+        text-align: left !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 48px !important;
+        padding-right: 16px !important;
+    }
+
+    .MuiTimelineItem-root {
+        min-height: 160px !important;
+    }
+
+    /* On mobile, show all content on right side */
+    .MuiTimeline-root {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .MuiTimelineContent-root {
+        width: 85% !important;
+    }
+
+    .MuiTimelineItem-root {
+        min-height: 180px !important;
+    }
+}
+
+/* Remove the position: alternate effect on mobile */
+@media (max-width: 768px) {
+    .MuiTimeline-positionAlternate {
+        text-align: left !important;
+    }
+
+    .MuiTimelineItem-root::before {
+        flex: 0 !important;
+        padding: 0 !important;
+    }
+}
+
+/* Ensure no overflow in timeline container */
+.mid-content {
+    overflow: visible !important;
+}
+
+.MuiTimeline-root {
+    overflow: visible !important;
+    padding: 40px 0 !important;
+}
+
+/* Fix for parent container */
+.parent_couple_card {
+    overflow: hidden;
+    /* This hides the scrollbar inside the card */
+}
+
+/* If you want to show scrollbar only for the timeline */
+.mid-content .MuiTimeline-root {
+    max-height: none !important;
+    overflow-y: visible !important;
+}

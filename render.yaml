@@ -1,0 +1,22 @@
+@'
+services:
+  - type: web
+    name: wedding-backend
+    env: python
+    plan: free
+    region: oregon
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r backend/requirements.txt
+      python backend/manage.py collectstatic --noinput
+    startCommand: gunicorn backend.wedding_backend.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+    disk:
+      name: media
+      mountPath: /opt/render/project/src/media
+      sizeGB: 1
+'@ | Out-File -FilePath render.yaml -Encoding UTF8
