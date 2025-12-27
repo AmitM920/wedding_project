@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿# Media files
 media/
 !media/.gitkeep
@@ -36,3 +37,37 @@ frontend/dist/
 frontend/node_modules/
 frontend/.env
 frontend/.env.local
+=======
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+media/           # Django uploaded files
+*.sqlite3       # Database files
+__pycache__/    # Python cache
+*.pyc
+.env            # Environment variables
+.vite/          # Vite cache
+node_modules/   # Frontend dependencies
+pre-wedding-pics/ # Local images
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317

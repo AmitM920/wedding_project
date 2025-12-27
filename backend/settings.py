@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+<<<<<<< HEAD
 import dj_database_url
+=======
+
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,9 +27,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-j00@smvss!@*pgd&9&9ic8$8x19(#^tz5wlh&w2&e7q2_4$a4r"
 
 # SECURITY WARNING: don't run with debug turned on in production!
+<<<<<<< HEAD
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+=======
+DEBUG = True
+
+ALLOWED_HOSTS = []
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
 
 
 # Application definition
@@ -63,7 +73,10 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000",
     "http://localhost:5173",  # Vite
     "http://127.0.0.1:5173",
+<<<<<<< HEAD
     "https://wedding-project-pink.vercel.app/" 
+=======
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
 ]
 
 # Or allow all during development (easier)
@@ -104,10 +117,17 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
+<<<<<<< HEAD
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),  # Render will provide this
         conn_max_age=600
     )
+=======
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
 }
 
 
@@ -145,7 +165,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+<<<<<<< HEAD
 
+=======
+STATIC_URL = "static/"
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # For production
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # For development
@@ -160,13 +184,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+<<<<<<< HEAD
 
+=======
+# Update ALLOWED_HOSTS for development
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
 
 
 # Quick fix for bulk upload - add these lines
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800      # 50 MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240       # More form fields
 DATA_UPLOAD_MAX_NUMBER_FILES = 1000         # More files
+<<<<<<< HEAD
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800      # 50 MB
 
 # Static files (CSS, JavaScript, Images)
@@ -182,3 +212,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if 'RENDER' in os.environ:
     # Tell Django to use WhiteNoise for static files
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+=======
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800      # 50 MB
+>>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
