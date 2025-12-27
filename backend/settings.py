@@ -60,8 +60,8 @@ MIDDLEWARE = [
 ]
 
 # CORS Configuration (Important for React-Django connection)
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:3000').split(',')
-
+default_cors = 'http://localhost:5173,http://localhost:3000,https://wedding-project-pink.vercel.app'
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', default_cors).split(',')
 # Or allow all during development (easier)
 CORS_ALLOW_ALL_ORIGINS = True  # Only True when DEBUG=True
 CORS_ALLOW_CREDENTIALS = True
