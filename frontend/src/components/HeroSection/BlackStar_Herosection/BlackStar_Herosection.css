@@ -246,17 +246,59 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .hero-section {
+        height: 50vh;
+        margin-bottom: 20px;
+    }
+
     .hero-content {
-        padding: 0 15px;
+        margin-top: 0vh;
+        position: relative;
+        z-index: 2;
+        left:0%;
+        /* margin-top: 15vh; */
+        text-align: center;
+        color: white;
+        padding: 0 20px;
+        width: 68%;
+        max-width: 32svw;
+        min-height: 200px;
+    }
+
+    .hero-title {
+        font-size: clamp(2.1rem, 6vw, 7rem);
+    }
+
+    .cta-button {
+        font-size: 0.4rem;
+        padding: 10px 30px;
     }
 
     .hero-navigation {
         bottom: 20px;
     }
 
+    .hero-subtitle {
+        font-size: 0.6rem;
+    }
+
     .scroll-indicator {
         right: 15px;
-        bottom: 15px;
+        bottom: 142px;
+    }
+
+    .card-swap-container {
+        transform: translate(64.4%, 53%)
+    }
+
+
+
+    .cardswap {
+        transform: scale(0.6) translate(0px, 0px);
+        right: 195px;
+        /* height: 603px !important; */
+        position: absolute;
+        /* right: 4px; */
     }
 }
 
