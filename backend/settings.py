@@ -202,15 +202,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
 if DEBUG:
     # Development - serve from app directories
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "static"),
     ]
-    STATIC_ROOT = None  # No static root needed in development
 else:
-    # Production - collect to static root
-    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+    # Production
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files (user uploads like photos)
