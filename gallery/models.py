@@ -6,6 +6,9 @@ import cloudinary.uploader
 import requests
 from io import BytesIO
 from PIL import Image
+from django.db import router
+from django.db import models
+from django.db.models.deletion import Collector
 
 def wedding_video_upload_path(instance, filename):
     """
@@ -30,7 +33,7 @@ class WeddingImage(models.Model):
         ("image", "Image"),
         ("video", "Video"),
     ]
-
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=200)
     media_type = models.CharField(
         max_length=10, choices=MEDIA_TYPE_CHOICES, default="image"
@@ -76,6 +79,26 @@ class WeddingImage(models.Model):
     def save(self, *args, **kwargs):
         print(f"🔄 SAVE: {self.title}")
         
+        # Track if we need to delete old image
+        old_image_public_id = None
+        old_thumbnail_public_id = None
+        
+        # If this is an update (not new), check if image changed
+        if self.pk:
+            try:
+                old = WeddingImage.objects.get(pk=self.pk)
+                # If image changed, delete old one from Cloudinary
+                if old.image and self.image and old.image.public_id != self.image.public_id:
+                    old_image_public_id = old.image.public_id
+                    print(f"   📝 Image changed, will delete old from Cloudinary: {old_image_public_id}")
+                
+                # If thumbnail changed, delete old thumbnail
+                if old.thumbnail and self.thumbnail and old.thumbnail.public_id != self.thumbnail.public_id:
+                    old_thumbnail_public_id = old.thumbnail.public_id
+                    print(f"   📝 Thumbnail changed, will delete old: {old_thumbnail_public_id}")
+            except WeddingImage.DoesNotExist:
+                pass
+        
         # Auto-set media_type
         if self.image and not self.video:
             self.media_type = "image"
@@ -100,6 +123,21 @@ class WeddingImage(models.Model):
                 print(f"   ✅ Thumbnail saved")
             except Exception as e:
                 print(f"   ⚠️ Thumbnail generation skipped: {e}")
+        
+        # Delete old Cloudinary files after successful save
+        if old_image_public_id:
+            try:
+                print(f"   🗑️ Deleting old image from Cloudinary: {old_image_public_id}")
+                cloudinary.uploader.destroy(old_image_public_id)
+            except Exception as e:
+                print(f"   ⚠️ Failed to delete old image: {e}")
+        
+        if old_thumbnail_public_id:
+            try:
+                print(f"   🗑️ Deleting old thumbnail from Cloudinary: {old_thumbnail_public_id}")
+                cloudinary.uploader.destroy(old_thumbnail_public_id)
+            except Exception as e:
+                print(f"   ⚠️ Failed to delete old thumbnail: {e}")
         
         print(f"✅ SAVE COMPLETE: {self.title}")
 
@@ -148,3 +186,32 @@ class WeddingImage(models.Model):
         except Exception as e:
             print(f"   ❌ Thumbnail generation error: {e}")
             # Don't crash if thumbnail fails
+    
+    def delete(self, using=None, keep_parents=False):
+        """
+        Override delete to also delete from Cloudinary.
+        Returns: (deleted_count, {model_name: count})
+        """
+        print(f"🗑️  Deleting WeddingImage {self.id}: {self.title}")
+        
+        if using is None:
+            using = router.db_for_write(self.__class__, instance=self)
+        
+        # Delete from Cloudinary if image exists
+        if self.image and hasattr(self.image, 'public_id'):
+            try:
+                print(f"   Deleting from Cloudinary: {self.image.public_id}")
+                cloudinary.uploader.destroy(self.image.public_id)
+            except Exception as e:
+                print(f"   ❌ Cloudinary deletion error: {e}")
+        
+        # Delete thumbnail if exists
+        if self.thumbnail and hasattr(self.thumbnail, 'public_id'):
+            try:
+                print(f"   Deleting thumbnail: {self.thumbnail.public_id}")
+                cloudinary.uploader.destroy(self.thumbnail.public_id)
+            except Exception as e:
+                print(f"   ❌ Thumbnail deletion error: {e}")
+        
+        # Call parent delete with correct signature
+        return super().delete(using=using, keep_parents=keep_parents)
