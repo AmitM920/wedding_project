@@ -1,13 +1,8 @@
-<<<<<<< HEAD
-﻿# Media files
-media/
-!media/.gitkeep
-
-# Python
+# Django
+*.pyc
 __pycache__/
-*.py[cod]
-*.class
-*.so
+*.pyo
+*.pyd
 .Python
 env/
 venv/
@@ -16,10 +11,16 @@ ENV/
 env.bak/
 venv.bak/
 
-# Django
-*.log
-local_settings.py
+# Database
+*.db
+*.sqlite3
 db.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.production
 
 # IDE
 .vscode/
@@ -31,43 +32,30 @@ db.sqlite3
 .DS_Store
 Thumbs.db
 
+# Media
+media/
+uploads/
 
-# Frontend build files
-frontend/dist/
-frontend/node_modules/
-frontend/.env
-frontend/.env.local
-=======
-# Logs
-logs
+# Static files collected
+staticfiles/
+static/
+
+# Python
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-media/           # Django uploaded files
-*.sqlite3       # Database files
-__pycache__/    # Python cache
-*.pyc
-.env            # Environment variables
-.vite/          # Vite cache
-node_modules/   # Frontend dependencies
-pre-wedding-pics/ # Local images
->>>>>>> dab13edd41307ea40604c8bb66e02f518f448317
+# Frontend
+node_modules/
+dist/
+build/
+.pre-wedding-pics/
