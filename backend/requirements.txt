@@ -6,9 +6,13 @@ djangorestframework==3.16.1
 pillow==12.0.0
 sqlparse==0.5.3
 tzdata==2025.2
-
+requests==2.32.3
 # Render production packages
 gunicorn==21.2.0
 whitenoise==6.6.0
 psycopg2-binary==2.9.9
 dj-database-url==2.1.0
+
+# cloudinary setup
+cloudinary==1.41.0
+django-cloudinary-storage==0.3.0

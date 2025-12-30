@@ -437,8 +437,6 @@ import { apiServices } from '../../services/api'; // Import from services
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Use environment variable or fallback
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 
 export default function Gallery() {
   const navigate = useNavigate();

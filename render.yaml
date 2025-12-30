@@ -1,22 +1,37 @@
-@'
 services:
   - type: web
-    name: wedding-backend
+    name: wedding-gallery-backend
     env: python
-    plan: free
-    region: oregon
+    region: singapore  # or your preferred region
     buildCommand: |
       pip install --upgrade pip
-      pip install -r backend/requirements.txt
-      python backend/manage.py collectstatic --noinput
-    startCommand: gunicorn backend.wedding_backend.wsgi:application
+      pip install -r requirements.txt
+    startCommand: gunicorn backend.wsgi:application
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DEBUG
+        value: "False"
       - key: SECRET_KEY
         generateValue: true
-      - key: WEB_CONCURRENCY
-        value: 4
-    disk:
-      name: media
-      mountPath: /opt/render/project/src/media
-      sizeGB: 1
-'@ | Out-File -FilePath render.yaml -Encoding UTF8
+      - key: DATABASE_URL
+        fromDatabase:
+          name: wedding-gallery-db
+          property: connectionString
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dddxxtr7o
+      - key: CLOUDINARY_API_KEY
+        sync: false  # You'll set this manually
+      - key: CLOUDINARY_API_SECRET
+        sync: false  # You'll set this manually
+      - key: ALLOWED_HOSTS
+        value: wedding-gallery-backend.onrender.com,localhost,127.0.0.1
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://wedding-project-pink.vercel.app,http://localhost:5173,http://localhost:3000
+
+databases:
+  - name: wedding-gallery-db
+    databaseName: wedding_gallery
+    user: wedding_user
+    region: singapore
+    plan: free

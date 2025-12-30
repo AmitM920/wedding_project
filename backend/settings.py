@@ -9,10 +9,17 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
+
+from dotenv import load_dotenv
+
 import os
+
+
 from pathlib import Path
 import dj_database_url
 
+load_dotenv()  # This loads .env file
+print(f"✅ .env loaded. CLOUDINARY_CLOUD_NAME: {os.environ.get('CLOUDINARY_CLOUD_NAME')}")
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -21,12 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('NEW_SECRET', "django-insecure-j00@smvss!@*pgd&9&9ic8$8x19(#^tz5wlh&w2&e7q2_4$a4r")
+SECRET_KEY = os.environ.get(
+    "NEW_SECRET", "django-insecure-j00@smvss!@*pgd&9&9ic8$8x19(#^tz5wlh&w2&e7q2_4$a4r"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
 
 
 # Application definition
@@ -38,17 +47,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # Third party apps
-    'rest_framework',
-    'corsheaders',
-    'django_filters',
-     # Your apps
-    'gallery',
+    "cloudinary",
+    "cloudinary_storage",
+    "rest_framework",
+    "corsheaders",
+    "django_filters",
+    # Your apps
+    "gallery",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', 
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -60,20 +70,18 @@ MIDDLEWARE = [
 ]
 
 # CORS Configuration (Important for React-Django connection)
-default_cors = 'http://localhost:5173,http://localhost:3000,https://wedding-project-pink.vercel.app'
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', default_cors).split(',')
+default_cors = "http://localhost:5173,http://localhost:3000,https://wedding-project-pink.vercel.app"
+CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", default_cors).split(",")
 # Or allow all during development (easier)
-CORS_ALLOW_ALL_ORIGINS = True  # Only True when DEBUG=True
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only True when DEBUG=True
 CORS_ALLOW_CREDENTIALS = True
 
 # REST Framework settings
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': [
-        'django_filters.rest_framework.DjangoFilterBackend'
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-    ]
 }
 
 
@@ -82,7 +90,7 @@ ROOT_URLCONF = "backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -100,14 +108,66 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),  # Render will provide this
-        conn_max_age=600
-    )
-}
+# First, get the DATABASE_URL from environment
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
+if DATABASE_URL:
+    # Use PostgreSQL in production (Render provides DATABASE_URL)
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=not DEBUG
+        )
+    }
+else:
+    # Use SQLite for local development
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+# *********** cloudinary database
+# *********** cloudinary database
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
+# Get values from environment
+CLOUD_NAME = os.environ.get("CLOUDINARY_CLOUD_NAME", "dddxxtr7o")  # Add default
+API_KEY = os.environ.get("CLOUDINARY_API_KEY", "815376427527426")  # Add default
+API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "8IVyKq5lrmHC2PdX0h4QHiWvpH4")  # Add default
+
+print(f"✅ Cloudinary Config - Name: {CLOUD_NAME}, Key: {API_KEY[:10]}...")
+
+# ✅ CRITICAL: Configure Cloudinary globally
+cloudinary.config(
+    cloud_name=CLOUD_NAME,
+    api_key=API_KEY,
+    api_secret=API_SECRET,
+    secure=True,
+)
+
+# ✅ CRITICAL: Set as Django settings
+CLOUDINARY_CLOUD_NAME = CLOUD_NAME
+CLOUDINARY_API_KEY = API_KEY
+CLOUDINARY_API_SECRET = API_SECRET
+
+# Cloudinary storage settings
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+MEDIA_URL = '/media/'
+# Security settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -140,16 +200,21 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # For development
-]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_URL = "/static/"
+if DEBUG:
+    # Development - serve from app directories
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "static"),
+    ]
+    STATIC_ROOT = None  # No static root needed in development
+else:
+    # Production - collect to static root
+    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Media files (user uploads like photos)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -158,7 +223,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # Quick fix for bulk upload - add these lines
-DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800      # 50 MB
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240       # More form fields
-DATA_UPLOAD_MAX_NUMBER_FILES = 1000         # More files
-FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800      # 50 MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240  # More form fields
+DATA_UPLOAD_MAX_NUMBER_FILES = 1000  # More files
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB

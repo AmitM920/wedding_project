@@ -1,216 +1,150 @@
-# gallery/models.py
+# gallery/models.py - WITH SIMPLE THUMBNAIL GENERATION
 from django.db import models
 import os
+from cloudinary.models import CloudinaryField
+import cloudinary.uploader
+import requests
 from io import BytesIO
-from django.core.files.base import ContentFile
-from PIL import Image, ImageOps
-
-def wedding_image_upload_path(instance, filename):
-    """
-    Returns the upload path for wedding images.
-    Format: wedding_images/category/filename
-    Example: wedding_images/pre_wedding/044A3859.JPG
-    """
-    # Get file extension
-    ext = filename.split('.')[-1]
-    
-    # Create a clean filename (optional)
-    clean_title = instance.title.replace(' ', '_').lower()[:50]
-    
-    # Create path: wedding_images/category/filename
-    return os.path.join('wedding_images', instance.category, f'{clean_title}.{ext}')
+from PIL import Image
 
 def wedding_video_upload_path(instance, filename):
     """
     Returns the upload path for wedding videos.
     Format: wedding_videos/category/filename
     """
-    ext = filename.split('.')[-1]
-    clean_title = instance.title.replace(' ', '_').lower()[:50]
-    return os.path.join('wedding_videos', instance.category, f'{clean_title}.{ext}')
+    ext = filename.split(".")[-1]
+    clean_title = instance.title.replace(" ", "_").lower()[:50]
+    return os.path.join("wedding_videos", instance.category, f"{clean_title}.{ext}")
 
 class WeddingImage(models.Model):
     CATEGORY_CHOICES = [
-        ('pre_wedding', 'Pre-Wedding'),
-        ('haldi', 'Haldi'),
-        ('mehndi', 'Mehndi'),
-        ('sagan', 'Sagan'),
-        ('rokha', 'Rokha'),
-        ('wedding', 'Wedding'),
+        ("pre_wedding", "Pre-Wedding"),
+        ("haldi", "Haldi"),
+        ("mehndi", "Mehndi"),
+        ("sagan", "Sagan"),
+        ("rokha", "Rokha"),
+        ("wedding", "Wedding"),
     ]
-    
+
     MEDIA_TYPE_CHOICES = [
-        ('image', 'Image'),
-        ('video', 'Video'),
+        ("image", "Image"),
+        ("video", "Video"),
     ]
-    
+
     title = models.CharField(max_length=200)
-    media_type = models.CharField(max_length=10, choices=MEDIA_TYPE_CHOICES, default='image')
-    
-    # For images - using the function for better organization
-    image = models.ImageField(
-        upload_to=wedding_image_upload_path, 
-        blank=True, 
-        null=True,
-        help_text="Upload image files only"
+    media_type = models.CharField(
+        max_length=10, choices=MEDIA_TYPE_CHOICES, default="image"
     )
-    # For thumbnails (smaller, faster-loading versions)
-    thumbnail = models.ImageField(
-        upload_to='thumbnails/',
+
+    image = CloudinaryField(
+        "image",
+        folder="wedding_gallery",
         blank=True,
         null=True,
-        help_text="Auto-generated smaller version of the image for fast loading"
-    )
-    # For videos  
-    video = models.FileField(
-        upload_to=wedding_video_upload_path, 
-        blank=True, 
-        null=True,
-        help_text="Upload video files only"
+        help_text="Upload image files only",
     )
     
+    thumbnail = CloudinaryField(
+        "image",
+        folder="wedding_gallery/thumbnails",
+        blank=True,
+        null=True,
+        help_text="Auto-generated thumbnail",
+    )
+
+    video = models.FileField(
+        upload_to=wedding_video_upload_path,
+        blank=True,
+        null=True,
+        help_text="Upload video files only",
+    )
+
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True)
     is_featured = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     order = models.IntegerField(default=0)
-    
+
     class Meta:
-        ordering = ['category', 'order', '-uploaded_at']
-        verbose_name = 'Wedding Media'
-        verbose_name_plural = 'Wedding Media'
-    
+        ordering = ["category", "order", "-uploaded_at"]
+        verbose_name = "Wedding Media"
+        verbose_name_plural = "Wedding Media"
+
     def __str__(self):
         return f"{self.title} ({self.category}) - {self.media_type}"
-    
-    @property
-    def media_url(self):
-        """Returns the URL for the media file (image or video)"""
-        if self.media_type == 'image' and self.image:
-            return self.image.url
-        elif self.media_type == 'video' and self.video:
-            return self.video.url
-        return None
-    
-    @property
-    def filename(self):
-        """Returns just the filename"""
-        if self.media_type == 'image' and self.image:
-            return os.path.basename(self.image.name)
-        elif self.media_type == 'video' and self.video:
-            return os.path.basename(self.video.name)
-        return None
-    
-    # gallery/models.py - Corrected save() method
-    def save(self, *args, **kwargs):
-        print(f"🔄 SAVE METHOD STARTED for: {self.title or 'No title'}")
-        print(f"   Media type before auto-set: {self.media_type}")
-        
-        # Auto-set media_type based on which field has content
-        if self.image and not self.video:
-            self.media_type = 'image'
-            print(f"   ✅ Auto-set media_type to 'image'")
-        elif self.video and not self.image:
-            self.media_type = 'video'
-            print(f"   ✅ Auto-set media_type to 'video'")
-        
-        # Check if we're creating a new image or updating an existing one
-        is_new = self.pk is None  # No primary key means new record
-        has_image_changed = False
-        
-        if not is_new:
-            print(f"   📄 Existing record (pk: {self.pk})")
-            try:
-                # Get the old instance to compare
-                old_instance = WeddingImage.objects.get(pk=self.pk)
-                # FIXED: Better check for image change
-                if old_instance.image and self.image:
-                    has_image_changed = (old_instance.image.name != self.image.name)
-                elif (old_instance.image and not self.image) or (not old_instance.image and self.image):
-                    has_image_changed = True
-                    
-                if has_image_changed:
-                    print(f"   📸 Image field has changed")
-            except Exception as e:
-                print(f"   ⚠️ Error checking old instance: {e}")
-        else:
-            print(f"   🆕 New record (no pk yet)")
-        
-        print(f"   📊 Status - New: {is_new}, Image changed: {has_image_changed}")
-        
-        # Call the parent save first to ensure image is saved to disk
-        print(f"   💾 Calling parent save()...")
-        super().save(*args, **kwargs)
-        print(f"   ✅ Parent save completed")
-        
-        # Initialize thumbnail generation flag
-        should_generate_thumbnail = False
-        
-        # Check if we need to generate a thumbnail
-        if self.image and (is_new or has_image_changed or not self.thumbnail):
-            should_generate_thumbnail = True
-            print(f"   🖼️ Thumbnail generation triggered because:")
-            if is_new:
-                print(f"     - This is a new image")
-            if has_image_changed:
-                print(f"     - Image field was changed")
-            if not self.thumbnail:
-                print(f"     - No thumbnail exists yet")
-        
-        if should_generate_thumbnail:
-            print(f"   🔧 Generating thumbnail...")
-            self.generate_thumbnail()
-            # Save again to store the thumbnail
-            print(f"   💾 Saving thumbnail to database...")
-            super().save(update_fields=['thumbnail'])
-            print(f"   ✅ Thumbnail saved to database")
-        else:
-            print(f"   ⏭️ Skipping thumbnail generation (not needed)")
-        
-        print(f"   ✅ SAVE METHOD COMPLETED for: {self.title or 'No title'}")
 
-    # THIS WAS INSIDE THE save() METHOD - NOW IT'S A SEPARATE METHOD
-    def generate_thumbnail(self):
+    def save(self, *args, **kwargs):
+        print(f"🔄 SAVE: {self.title}")
+        
+        # Auto-set media_type
+        if self.image and not self.video:
+            self.media_type = "image"
+            print(f"   Set media_type to 'image'")
+        elif self.video and not self.image:
+            self.media_type = "video"
+            print(f"   Set media_type to 'video'")
+        
+        # Check if image is being set/changed
+        is_new = self.pk is None
+        
+        # Save the model
+        super().save(*args, **kwargs)
+        print(f"✅ Model saved (ID: {self.pk})")
+        
+        # Generate thumbnail for new images or if image changed
+        if self.image and is_new and not self.thumbnail:
+            print(f"   🖼️ Generating thumbnail for new image...")
+            try:
+                self.generate_thumbnail_simple()
+                super().save(update_fields=['thumbnail'])
+                print(f"   ✅ Thumbnail saved")
+            except Exception as e:
+                print(f"   ⚠️ Thumbnail generation skipped: {e}")
+        
+        print(f"✅ SAVE COMPLETE: {self.title}")
+
+    def generate_thumbnail_simple(self):
+        """Simple thumbnail generation for Cloudinary"""
         if not self.image:
-            print(f"   ⚠️ No image to generate thumbnail for")
             return
-            
+        
         try:
-            # Open the original image
-            img = Image.open(self.image.path)
+            print(f"   📍 Generating thumbnail for: {self.image.public_id}")
             
-            # Convert to RGB if necessary (for PNG with transparency)
-            if img.mode in ('RGBA', 'LA', 'P'):
-                # Create a white background
-                background = Image.new('RGB', img.size, (255, 255, 255))
-                # Paste the image on the background
-                if img.mode == 'P':
-                    img = img.convert('RGBA')
-                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
-                img = background
-            elif img.mode != 'RGB':
-                img = img.convert('RGB')
+            # Method 1: Use Cloudinary's eager transformations (simpler)
+            # We'll create a derived thumbnail by uploading a smaller version
             
-            # Create thumbnail (max 300x300, maintaining aspect ratio)
-            img.thumbnail((300, 300), Image.Resampling.LANCZOS)
+            # Download the original (small version for thumbnail)
+            original_url = self.image.build_url(width=500, height=500, crop="limit")
+            response = requests.get(original_url)
             
-            # Save to BytesIO
-            thumb_io = BytesIO()
-            img.save(thumb_io, format='JPEG', quality=80, optimize=True)
-            
-            # Generate filename
-            original_name = os.path.basename(self.image.name)
-            name, ext = os.path.splitext(original_name)
-            thumb_filename = f'thumb_{name}.jpg'
-            
-            # Save to thumbnail field
-            self.thumbnail.save(
-                thumb_filename,
-                ContentFile(thumb_io.getvalue()),
-                save=False  # Don't save the model yet
-            )
-            
-            print(f"   ✅ Generated thumbnail for: {original_name}")
-            
+            if response.status_code == 200:
+                # Create thumbnail image
+                img = Image.open(BytesIO(response.content))
+                img.thumbnail((300, 300))
+                
+                # Save to bytes
+                thumb_buffer = BytesIO()
+                img.save(thumb_buffer, format='JPEG', quality=70)
+                thumb_buffer.seek(0)
+                
+                # Generate thumbnail public_id
+                thumb_public_id = f"{self.image.public_id}_thumb"
+                
+                # Upload to Cloudinary
+                result = cloudinary.uploader.upload(
+                    thumb_buffer,
+                    public_id=thumb_public_id,
+                    folder="wedding_gallery/thumbnails",
+                    overwrite=True
+                )
+                
+                # Set the thumbnail field
+                self.thumbnail = result['public_id']
+                print(f"   ✅ Thumbnail created: {result['public_id']}")
+            else:
+                print(f"   ⚠️ Could not download image for thumbnail")
+                
         except Exception as e:
-            print(f"   ❌ Error generating thumbnail for {self.image.name if self.image else 'unknown'}: {e}")
+            print(f"   ❌ Thumbnail generation error: {e}")
+            # Don't crash if thumbnail fails
