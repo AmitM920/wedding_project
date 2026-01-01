@@ -5,6 +5,7 @@
     /* backdrop-filter: blur(20px); */
     /* Solid black background */
     position: relative;
+    margin-bottom: 50px;
 }
 
 .GalleryParent::before {

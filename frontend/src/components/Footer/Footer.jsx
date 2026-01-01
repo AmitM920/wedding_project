@@ -7,8 +7,8 @@ function Footer() {
 
   React.useEffect(() => {
     apiServices.helloDjango() // Changed from apiservices to apiServices
-      .then(data => setBackendStatus(`✅ ${data.message}`))
-      .catch(() => setBackendStatus('❌ Backend offline'))
+      .then(data => setBackendStatus(`🟢 ${data.message}`))
+      .catch(() => setBackendStatus('🔴 Backend offline'))
   }, [])
 
   return (
@@ -17,8 +17,7 @@ function Footer() {
         <p>{backendStatus}</p>
       </div>
       <div className="footer-content">
-        <p>© 2025 Wedding Photography. All rights reserved.</p>
-        <p className="tagline">Capturing moments that last forever 💕</p>
+        <p className="tagline">💕 Capturing moments that last forever 💕</p>
       </div>
     </footer>
   )
