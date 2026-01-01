@@ -33,7 +33,7 @@ import { FaBolt, FaChevronDown, FaUser } from 'react-icons/fa';
 import { MdExpandMore, MdExpandLess } from 'react-icons/md';
 
 function About() {
-  const [techStackOpen, setTechStackOpen] = useState(true);
+  const [techStackOpen, setTechStackOpen] = useState(false);
   const [aboutDevOpen, setAboutDevOpen] = useState(false);
 
   const techStack = [
@@ -315,8 +315,8 @@ function About() {
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        backdropFilter: 'blur(0.2px)',
         zIndex: -1,
       }} />
     </Container>
