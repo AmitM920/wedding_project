@@ -3,7 +3,7 @@ import React, { useEffect, memo, useRef } from 'react'
 // import ProfileCardbride from '../ui/ProfileCardComponentBride'
 import './ProfileCard_section.css'
 
-import LoveStoryTimeline from './LoveStoryTimeline';
+import LoveStoryTimeline, { SimpleLoveStoryTimeline } from './LoveStoryTimeline';
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 // import Mid_compo from './Mid_compo';
@@ -62,6 +62,8 @@ const ProfileCard_section = memo(function ProfileCard_section() {
         {/* <Mid_compo></Mid_compo> */}
         {/* <Embed></Embed> */}
         <LoveStoryTimeline showIcons={false} />
+        {/* <SimpleLoveStoryTimeline/> */}
+        
       </div>
 
       {/* <ProfileCardbride

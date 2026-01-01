@@ -27,36 +27,36 @@ export default function LoveStoryTimeline({ showIcons = true }) {
     const loveStoryEvents = [
         {
             id: 1,
-            date: "March 15, 2022",
-            title: "The Digital Connection",
-            description: "Met through a mutual friend on Instagram. First message: 'Hey, I think we have a friend in common!'",
+            date: "Dec 28, 2024",
+            title: "The Digital Interest",
+            description: "Jeevansaathi request sent.",
             icon: <ComputerIcon />,
             color: "primary",
             hasOpposite: true
         },
         {
             id: 2,
-            date: "April 10, 2022",
-            title: "First Date at Café Royale",
-            description: "Met at the mall's coffee shop. Conversation flowed for 3 hours over cappuccinos and pastries.",
+            date: "Dec 29, 2024",
+            title: "Exchange Of Messages",
+            description: "First digital interaction.",
             icon: <RestaurantIcon />,
             color: "secondary",
             hasOpposite: true
         },
         {
             id: 3,
-            date: "May 20, 2022",
-            title: "Family Introduction",
-            description: "Her parents visited our home. Traditional sweets were exchanged, and blessings were given.",
+            date: "Jan 23, 2025",
+            title: "Smile Through Pixels",
+            description: "A video call in between two soul.",
             icon: <PeopleIcon />,
             color: "success",
             hasOpposite: true
         },
         {
             id: 4,
-            date: "June 5, 2022",
-            title: "Romantic Getaway",
-            description: "Weekend trip to the mountains. Watched sunrise together, promising forever.",
+            date: "June 5, 2025",
+            title: "Hello in HD",
+            description: "Meeting in person at shipra mall.",
             icon: <FlightIcon />,
             color: "warning",
             hasOpposite: true
@@ -64,17 +64,27 @@ export default function LoveStoryTimeline({ showIcons = true }) {
         {
             id: 5,
             date: "July 15, 2022",
-            title: "The Proposal",
-            description: "Under the stars with family and friends. He got down on one knee with a ring.",
+            title: "The Family Council",
+            description: "Family introduction.",
             icon: <DiamondIcon />,
             color: "error",
             hasOpposite: true
         },
         {
             id: 6,
-            date: "February 15, 2024",
-            title: "Wedding Day",
-            description: "The beginning of our forever journey as husband and wife.",
+            date: "February 23, 2025",
+            title: "The Foundation Meeting",
+            description: "First official meeting.",
+            icon: <FavoriteIcon />,
+            color: "primary",
+            variant: "outlined",
+            hasOpposite: true
+        },
+        {
+            id: 6,
+            date: "Nov 24, 2025",
+            title: "The Grand Day",
+            description: "The Wedding Day.",
             icon: <FavoriteIcon />,
             color: "primary",
             variant: "outlined",
@@ -212,30 +222,70 @@ export default function LoveStoryTimeline({ showIcons = true }) {
 // Alternative: Simple version without icons
 export function SimpleLoveStoryTimeline() {
     const simpleEvents = [
-        {
-            date: "March 2022",
-            title: "Online Meeting",
-            description: "Connected through social media"
+       {
+            id: 1,
+            date: "Dec 28, 2024",
+            title: "The Digital Interest",
+            description: "Jeevansaathi request sent.",
+            icon: <ComputerIcon />,
+            color: "primary",
+            hasOpposite: true
         },
         {
-            date: "April 2022",
-            title: "First Date",
-            description: "Coffee shop meeting that lasted hours"
+            id: 2,
+            date: "Dec 29, 2024",
+            title: "Exchange Of Messages",
+            description: "First digital interaction.",
+            icon: <RestaurantIcon />,
+            color: "secondary",
+            hasOpposite: true
         },
         {
-            date: "May 2022",
-            title: "Family Meets",
-            description: "Parents blessed our relationship"
+            id: 3,
+            date: "Jan 23, 2025",
+            title: "Smile Through Pixels",
+            description: "A video call in between two soul.",
+            icon: <PeopleIcon />,
+            color: "success",
+            hasOpposite: true
         },
         {
-            date: "July 2022",
-            title: "Engagement",
-            description: "Official promise to marry"
+            id: 4,
+            date: "June 5, 2025",
+            title: "Hello in HD",
+            description: "Meeting in person at shipra mall.",
+            icon: <FlightIcon />,
+            color: "warning",
+            hasOpposite: true
         },
         {
-            date: "Feb 2024",
-            title: "Wedding",
-            description: "Lifelong commitment begins"
+            id: 5,
+            date: "July 15, 2022",
+            title: "The Family Council",
+            description: "Family introduction.",
+            icon: <DiamondIcon />,
+            color: "error",
+            hasOpposite: true
+        },
+        {
+            id: 6,
+            date: "February 23, 2025",
+            title: "The Foundation Meeting",
+            description: "First official meeting.",
+            icon: <FavoriteIcon />,
+            color: "primary",
+            variant: "outlined",
+            hasOpposite: true
+        },
+        {
+            id: 6,
+            date: "Nov 24, 2025",
+            title: "The Grand Day",
+            description: "The Wedding Day.",
+            icon: <FavoriteIcon />,
+            color: "primary",
+            variant: "outlined",
+            hasOpposite: true
         }
     ];
 
