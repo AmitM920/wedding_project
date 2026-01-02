@@ -77,7 +77,7 @@ function About() {
     <Container maxWidth="md" sx={{
       py: 4,
       color: 'white',
-      minHeight: '100vh',
+      minHeight: '50vh',
     }}>
       
       {/* Main Header */}
