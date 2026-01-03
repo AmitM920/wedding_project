@@ -1,9 +1,11 @@
 # gallery/views.py
+import time
+import cloudinary.utils
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django_filters.rest_framework import DjangoFilterBackend
 import cloudinary.uploader
 from .models import WeddingImage
@@ -18,113 +20,142 @@ def hello_world(request):
             "/api/gallery/images/",
             "/api/gallery/images/categories/",
             "/api/gallery/images/featured/",
-            "/api/gallery/bulk-upload/"  # NEW
+            "/api/gallery/cloudinary-signature/",  # UPDATED
+            "/api/gallery/save-urls/",  # UPDATED
         ]
     })
 
-class BulkUploadAPIView(APIView):
+class CloudinarySignatureView(APIView):
     """
-    Handle bulk uploads for Render (max 20 images at a time)
-    Works with your existing CloudinaryField model
+    Returns a signature for secure client-side upload.
+    This avoids the 30s timeout on Render - VERY FAST
     """
-    parser_classes = (MultiPartParser, FormParser)
+    def get(self, request):
+        timestamp = int(time.time())
+        folder = "wedding_gallery"
+        
+        # We sign the parameters that the frontend MUST send
+        params_to_sign = {
+            'timestamp': timestamp,
+            'folder': folder,
+        }
+        
+        # Get signature using Cloudinary's utility
+        signature = cloudinary.utils.api_sign_request(
+            params_to_sign, 
+            cloudinary.config().api_secret
+        )
+
+        return Response({
+            'success': True,
+            'signature': signature,
+            'timestamp': timestamp,
+            'cloud_name': cloudinary.config().cloud_name,
+            'api_key': cloudinary.config().api_key,
+            'folder': folder
+        })
+
+class SaveCloudinaryUrlsView(APIView):
+    """
+    After frontend uploads to Cloudinary, it sends the URLs here 
+    to be saved in the Django Database.
+    This is FAST because it only saves URLs, no file handling.
+    """
+    parser_classes = (JSONParser,)
     
-    def post(self, request, *args, **kwargs):
-        # Get images from request (handles both 'images' and 'images[]')
-        images = request.FILES.getlist('images[]') or request.FILES.getlist('images')
+    def post(self, request):
+        urls = request.data.get('urls', [])  # List of Cloudinary response objects
+        category = request.data.get('category', 'wedding')
         
-        if not images:
+        if not urls:
             return Response({
-                'error': 'No images provided',
-                'tip': 'Make sure form field name is "images" or "images[]"'
+                'error': 'No URLs provided'
             }, status=status.HTTP_400_BAD_REQUEST)
         
-        # IMPORTANT: Limit to 20 images at a time for Render
-        if len(images) > 20:
-            return Response({
-                'error': 'Too many images at once',
-                'message': 'Render free tier has 30-second timeout. Please upload maximum 20 images at a time.',
-                'max_allowed': 20,
-                'received': len(images),
-                'solution': 'Split your upload into batches of 20 images'
-            }, status=status.HTTP_400_BAD_REQUEST)
+        # Validate category
+        valid_categories = [choice[0] for choice in WeddingImage.CATEGORY_CHOICES]
+        if category not in valid_categories:
+            category = 'wedding'
         
-        uploaded_images = []
+        saved_images = []
         failed_images = []
         
-        # Get category from request or use default
-        category = request.data.get('category', 'wedding')
-        if category not in [choice[0] for choice in WeddingImage.CATEGORY_CHOICES]:
-            category = 'wedding'  # Default to wedding
-        
-        for index, image in enumerate(images):
+        for cloudinary_data in urls:
             try:
-                print(f"📤 Uploading {index + 1}/{len(images)}: {image.name} ({category})")
+                # Extract filename from URL or public_id
+                public_id = cloudinary_data.get('public_id', '')
+                if '/' in public_id:
+                    filename = public_id.split('/')[-1]
+                else:
+                    filename = public_id
                 
-                # Upload to Cloudinary
-                upload_result = cloudinary.uploader.upload(
-                    image,
-                    folder="wedding_gallery",
-                    resource_type="image",
-                    overwrite=False,
-                    timeout=30
-                )
-                
-                # Get the filename without extension for title
-                title = image.name.rsplit('.', 1)[0] if '.' in image.name else image.name
-                title = title[:200]  # Truncate to model max length
-                
-                # Create WeddingImage instance with CloudinaryField
-                # CloudinaryField accepts the Cloudinary result directly
+                # Create the record in DB
                 wedding_image = WeddingImage(
-                    title=title,
+                    title=filename,
                     media_type='image',
                     category=category,
-                    description=f"Uploaded in bulk - {category}",
+                    description=f"Direct upload - {category}",
                     is_featured=False,
                     order=0
                 )
                 
-                # Set the CloudinaryField using the upload result
-                wedding_image.image = upload_result
+                # CloudinaryField accepts either:
+                # 1. Cloudinary upload result dict
+                # 2. URL string
+                # 3. public_id string
                 
-                # Save to trigger thumbnail generation
+                # Pass the entire Cloudinary result dict
+                wedding_image.image = cloudinary_data
+                
+                # Save (this will trigger thumbnail generation)
                 wedding_image.save()
                 
-                # Get the image URLs for response
+                # Get URLs after save
                 image_url = wedding_image.image.url if wedding_image.image else None
                 thumbnail_url = wedding_image.thumbnail.url if wedding_image.thumbnail else image_url
                 
-                uploaded_images.append({
+                saved_images.append({
                     'id': wedding_image.id,
                     'title': wedding_image.title,
                     'image_url': image_url,
                     'thumbnail_url': thumbnail_url,
                     'category': wedding_image.category,
                     'media_type': wedding_image.media_type,
-                    'public_id': upload_result.get('public_id', '')
+                    'public_id': public_id
                 })
                 
-                print(f"✅ Uploaded: {image.name} (ID: {wedding_image.id})")
-                
             except Exception as e:
-                error_msg = str(e)
-                print(f"❌ Failed to upload {image.name}: {error_msg}")
                 failed_images.append({
-                    'name': image.name,
-                    'error': error_msg,
-                    'category': category
+                    'data': cloudinary_data.get('public_id', 'unknown'),
+                    'error': str(e)
                 })
         
         return Response({
             'success': True,
-            'message': f'Uploaded {len(uploaded_images)} images, {len(failed_images)} failed',
-            'uploaded_count': len(uploaded_images),
+            'message': f'Saved {len(saved_images)} images to database',
+            'saved_count': len(saved_images),
             'failed_count': len(failed_images),
-            'uploaded_images': uploaded_images,
-            'failed_images': failed_images,
-            'next_step': 'Continue uploading next batch of 20 images'
-        }, status=status.HTTP_200_OK)
+            'saved_images': saved_images,
+            'failed_images': failed_images
+        })
+
+# Keep the old BulkUploadAPIView as backup (optional)
+class BulkUploadAPIView(APIView):
+    """
+    DEPRECATED: Old bulk upload method that causes 502 timeout
+    Keeping for backward compatibility
+    """
+    parser_classes = (MultiPartParser, FormParser)
+    
+    def post(self, request, *args, **kwargs):
+        return Response({
+            'error': 'This endpoint is deprecated',
+            'message': 'Use direct Cloudinary upload instead',
+            'new_endpoints': {
+                'get_signature': '/api/gallery/cloudinary-signature/',
+                'save_urls': '/api/gallery/save-urls/'
+            }
+        }, status=status.HTTP_410_GONE)
 
 class WeddingImageViewSet(viewsets.ModelViewSet):
     queryset = WeddingImage.objects.all()
