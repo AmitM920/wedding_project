@@ -57,7 +57,7 @@ class CloudinarySignatureView(APIView):
 
 class SaveCloudinaryUrlsView(APIView):
     """
-    SIMPLER VERSION: Save only URLs, let thumbnail generation happen later
+    DEBUG VERSION: More detailed error information
     """
     parser_classes = (JSONParser,)
     
@@ -65,22 +65,27 @@ class SaveCloudinaryUrlsView(APIView):
         urls = request.data.get('urls', [])
         category = request.data.get('category', 'wedding')
         
+        print(f"📥 Received request to save {len(urls)} images")
+        print(f"📥 Category: {category}")
+        if urls:
+            print(f"📥 First URL data keys: {list(urls[0].keys())}")
+        
         if not urls:
             return Response({'error': 'No URLs provided'}, status=status.HTTP_400_BAD_REQUEST)
         
         saved = 0
         failed = 0
-        failed_details = []
-        saved_images = []
+        results = []
         
-        for data in urls:
+        for i, data in enumerate(urls):
             try:
                 # Extract basic info
                 public_id = data.get('public_id', '')
                 secure_url = data.get('secure_url', '')
                 
-                print(f"💾 Attempting to save: {public_id}")
-                print(f"   URL: {secure_url}")
+                print(f"\n📝 Processing image {i+1}/{len(urls)}:")
+                print(f"   Public ID: {public_id}")
+                print(f"   Secure URL: {secure_url}")
                 print(f"   Category: {category}")
                 
                 # Create simple title from filename
@@ -90,71 +95,126 @@ class SaveCloudinaryUrlsView(APIView):
                     title = public_id
                 
                 title = title.replace('_', ' ').replace('-', ' ').split('.')[0]
+                title = title[:200]  # Max 200 chars
                 
-                # Create and save - using the public_id string
-                # CloudinaryField can handle public_id strings
-                img = WeddingImage(
-                    title=title[:200],  # Max 200 chars
-                    media_type='image',
-                    category=category,
-                    image=public_id,  # Use public_id instead of full URL
-                    description="Bulk uploaded",
-                    is_featured=False,
-                    order=0
-                )
+                print(f"   Title: {title}")
                 
-                # Save without triggering thumbnail generation immediately
-                # We'll do a simple save first
-                super(WeddingImage, img).save()
-                
-                # Now try to generate thumbnail
+                # METHOD 1: Try saving with the entire Cloudinary data dict
                 try:
-                    print(f"   Generating thumbnail for {public_id}")
-                    img.generate_thumbnail_simple()
-                    # Save again to update thumbnail
-                    super(WeddingImage, img).save(update_fields=['thumbnail'])
-                except Exception as thumb_error:
-                    print(f"   ⚠️ Thumbnail generation skipped: {thumb_error}")
-                    # Continue even if thumbnail fails
+                    print(f"   Trying METHOD 1: Save with entire Cloudinary data...")
+                    img = WeddingImage(
+                        title=title,
+                        media_type='image',
+                        category=category,
+                        description=f"Uploaded - {category}",
+                        is_featured=False,
+                        order=0
+                    )
+                    # Set the CloudinaryField with the entire dict
+                    img.image = data
+                    img.save()
+                    print(f"   ✅ METHOD 1 succeeded! ID: {img.id}")
+                    
+                    results.append({
+                        'status': 'success',
+                        'id': img.id,
+                        'title': img.title,
+                        'image_url': img.image.url if img.image else secure_url,
+                        'thumbnail_url': img.thumbnail.url if img.thumbnail else None,
+                        'category': img.category,
+                        'public_id': public_id,
+                        'method_used': 'full_dict'
+                    })
+                    
+                except Exception as method1_error:
+                    print(f"   ❌ METHOD 1 failed: {method1_error}")
+                    
+                    # METHOD 2: Try saving with just the secure_url
+                    try:
+                        print(f"   Trying METHOD 2: Save with secure_url string...")
+                        img = WeddingImage(
+                            title=title,
+                            media_type='image',
+                            category=category,
+                            description=f"Uploaded - {category}",
+                            is_featured=False,
+                            order=0
+                        )
+                        img.image = secure_url  # Try with just the URL string
+                        img.save()
+                        print(f"   ✅ METHOD 2 succeeded! ID: {img.id}")
+                        
+                        results.append({
+                            'status': 'success',
+                            'id': img.id,
+                            'title': img.title,
+                            'image_url': img.image.url if img.image else secure_url,
+                            'thumbnail_url': img.thumbnail.url if img.thumbnail else None,
+                            'category': img.category,
+                            'public_id': public_id,
+                            'method_used': 'secure_url'
+                        })
+                        
+                    except Exception as method2_error:
+                        print(f"   ❌ METHOD 2 failed: {method2_error}")
+                        
+                        # METHOD 3: Try saving with just the public_id
+                        try:
+                            print(f"   Trying METHOD 3: Save with public_id string...")
+                            img = WeddingImage(
+                                title=title,
+                                media_type='image',
+                                category=category,
+                                description=f"Uploaded - {category}",
+                                is_featured=False,
+                                order=0
+                            )
+                            img.image = public_id  # Try with just public_id string
+                            img.save()
+                            print(f"   ✅ METHOD 3 succeeded! ID: {img.id}")
+                            
+                            results.append({
+                                'status': 'success',
+                                'id': img.id,
+                                'title': img.title,
+                                'image_url': img.image.url if img.image else secure_url,
+                                'thumbnail_url': img.thumbnail.url if img.thumbnail else None,
+                                'category': img.category,
+                                'public_id': public_id,
+                                'method_used': 'public_id'
+                            })
+                            
+                        except Exception as method3_error:
+                            print(f"   ❌ METHOD 3 failed: {method3_error}")
+                            raise method3_error  # Re-raise to be caught by outer try-except
                 
+                # If we get here, image was saved successfully
                 saved += 1
-                
-                # Get URLs for response
-                image_url = img.image.url if img.image else secure_url
-                thumbnail_url = img.thumbnail.url if img.thumbnail else image_url
-                
-                saved_images.append({
-                    'id': img.id,
-                    'title': img.title,
-                    'image_url': image_url,
-                    'thumbnail_url': thumbnail_url,
-                    'category': img.category,
-                    'media_type': img.media_type,
-                    'public_id': public_id
-                })
-                
-                print(f"✅ Successfully saved: {title} (ID: {img.id})")
+                print(f"   ✅ Successfully saved image {i+1}")
                 
             except Exception as e:
                 import traceback
                 error_trace = traceback.format_exc()
-                print(f"❌ Failed to save {data.get('public_id', 'unknown')}: {str(e)}")
-                print(f"Error details: {error_trace}")
+                print(f"   ❌❌❌ ALL METHODS FAILED for image {i+1}:")
+                print(f"   Error: {str(e)}")
+                print(f"   Traceback (first 500 chars):\n{error_trace[:500]}")
                 
                 failed += 1
-                failed_details.append({
+                results.append({
+                    'status': 'failed',
                     'public_id': data.get('public_id', 'unknown'),
                     'error': str(e),
-                    'trace': error_trace[:500]  # First 500 chars of trace
+                    'trace': error_trace[:1000]  # First 1000 chars
                 })
+        
+        print(f"\n📊 FINAL RESULTS: {saved} saved, {failed} failed")
         
         return Response({
             'success': saved > 0,
             'message': f'Saved {saved} images, {failed} failed',
             'saved_count': saved,
             'failed_count': failed,
-            'saved_images': saved_images,
-            'failed_images': failed_details,
+            'results': results,
             'total': len(urls)
         })
 
