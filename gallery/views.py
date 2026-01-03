@@ -57,86 +57,105 @@ class CloudinarySignatureView(APIView):
 
 class SaveCloudinaryUrlsView(APIView):
     """
-    After frontend uploads to Cloudinary, it sends the URLs here 
-    to be saved in the Django Database.
-    This is FAST because it only saves URLs, no file handling.
+    SIMPLER VERSION: Save only URLs, let thumbnail generation happen later
     """
     parser_classes = (JSONParser,)
     
     def post(self, request):
-        urls = request.data.get('urls', [])  # List of Cloudinary response objects
+        urls = request.data.get('urls', [])
         category = request.data.get('category', 'wedding')
         
         if not urls:
-            return Response({
-                'error': 'No URLs provided'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'No URLs provided'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Validate category
-        valid_categories = [choice[0] for choice in WeddingImage.CATEGORY_CHOICES]
-        if category not in valid_categories:
-            category = 'wedding'
-        
+        saved = 0
+        failed = 0
+        failed_details = []
         saved_images = []
-        failed_images = []
         
-        for cloudinary_data in urls:
+        for data in urls:
             try:
-                # Extract filename from URL or public_id
-                public_id = cloudinary_data.get('public_id', '')
-                if '/' in public_id:
-                    filename = public_id.split('/')[-1]
-                else:
-                    filename = public_id
+                # Extract basic info
+                public_id = data.get('public_id', '')
+                secure_url = data.get('secure_url', '')
                 
-                # Create the record in DB
-                wedding_image = WeddingImage(
-                    title=filename,
+                print(f"💾 Attempting to save: {public_id}")
+                print(f"   URL: {secure_url}")
+                print(f"   Category: {category}")
+                
+                # Create simple title from filename
+                if '/' in public_id:
+                    title = public_id.split('/')[-1]
+                else:
+                    title = public_id
+                
+                title = title.replace('_', ' ').replace('-', ' ').split('.')[0]
+                
+                # Create and save - using the public_id string
+                # CloudinaryField can handle public_id strings
+                img = WeddingImage(
+                    title=title[:200],  # Max 200 chars
                     media_type='image',
                     category=category,
-                    description=f"Direct upload - {category}",
+                    image=public_id,  # Use public_id instead of full URL
+                    description="Bulk uploaded",
                     is_featured=False,
                     order=0
                 )
                 
-                # CloudinaryField accepts either:
-                # 1. Cloudinary upload result dict
-                # 2. URL string
-                # 3. public_id string
+                # Save without triggering thumbnail generation immediately
+                # We'll do a simple save first
+                super(WeddingImage, img).save()
                 
-                # Pass the entire Cloudinary result dict
-                wedding_image.image = cloudinary_data
+                # Now try to generate thumbnail
+                try:
+                    print(f"   Generating thumbnail for {public_id}")
+                    img.generate_thumbnail_simple()
+                    # Save again to update thumbnail
+                    super(WeddingImage, img).save(update_fields=['thumbnail'])
+                except Exception as thumb_error:
+                    print(f"   ⚠️ Thumbnail generation skipped: {thumb_error}")
+                    # Continue even if thumbnail fails
                 
-                # Save (this will trigger thumbnail generation)
-                wedding_image.save()
+                saved += 1
                 
-                # Get URLs after save
-                image_url = wedding_image.image.url if wedding_image.image else None
-                thumbnail_url = wedding_image.thumbnail.url if wedding_image.thumbnail else image_url
+                # Get URLs for response
+                image_url = img.image.url if img.image else secure_url
+                thumbnail_url = img.thumbnail.url if img.thumbnail else image_url
                 
                 saved_images.append({
-                    'id': wedding_image.id,
-                    'title': wedding_image.title,
+                    'id': img.id,
+                    'title': img.title,
                     'image_url': image_url,
                     'thumbnail_url': thumbnail_url,
-                    'category': wedding_image.category,
-                    'media_type': wedding_image.media_type,
+                    'category': img.category,
+                    'media_type': img.media_type,
                     'public_id': public_id
                 })
                 
+                print(f"✅ Successfully saved: {title} (ID: {img.id})")
+                
             except Exception as e:
-                failed_images.append({
-                    'data': cloudinary_data.get('public_id', 'unknown'),
-                    'error': str(e)
+                import traceback
+                error_trace = traceback.format_exc()
+                print(f"❌ Failed to save {data.get('public_id', 'unknown')}: {str(e)}")
+                print(f"Error details: {error_trace}")
+                
+                failed += 1
+                failed_details.append({
+                    'public_id': data.get('public_id', 'unknown'),
+                    'error': str(e),
+                    'trace': error_trace[:500]  # First 500 chars of trace
                 })
         
         return Response({
-            'success': True,
-            'message': f'Saved {len(saved_images)} images to database',
-            'saved_count': len(saved_images),
-            'failed_count': len(failed_images),
+            'success': saved > 0,
+            'message': f'Saved {saved} images, {failed} failed',
+            'saved_count': saved,
+            'failed_count': failed,
             'saved_images': saved_images,
-            'failed_images': failed_images
+            'failed_images': failed_details,
+            'total': len(urls)
         })
 
 # Keep the old BulkUploadAPIView as backup (optional)
