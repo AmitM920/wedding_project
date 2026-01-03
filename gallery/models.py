@@ -8,8 +8,6 @@ import requests
 from io import BytesIO
 from PIL import Image
 from django.db import router
-from django.db.models.deletion import Collector
-import hashlib
 import time
 
 def wedding_video_upload_path(instance, filename):
@@ -390,10 +388,9 @@ class WeddingImage(models.Model):
         # Call parent delete with correct signature
         return super().delete(using=using, keep_parents=keep_parents)
 
-    @property
     def thumbnail_preview(self):
         """
-        Property for admin to show thumbnail preview
+        Method for admin to show thumbnail preview
         """
         thumb_url = self.get_thumbnail_url()
         if thumb_url:
@@ -401,3 +398,4 @@ class WeddingImage(models.Model):
         return "No thumbnail"
     
     thumbnail_preview.allow_tags = True
+    thumbnail_preview.short_description = 'Thumbnail'
