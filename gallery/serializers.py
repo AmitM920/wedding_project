@@ -50,30 +50,18 @@ class WeddingImageSerializer(serializers.ModelSerializer):
         return None
     
     def get_thumbnail_url(self, obj):
-        """Return absolute URL for the thumbnail (fallback to full image if no thumbnail)"""
-        if obj.thumbnail:
-            try:
-                return str(obj.thumbnail.url)
-            except Exception as e:
-                print(f"Error getting thumbnail URL for {obj.id}: {e}")
-                request = self.context.get('request')
-                if request:
-                    try:
-                        return request.build_absolute_uri(obj.thumbnail.url)
-                    except:
-                        pass
-                
-                # Construct Cloudinary URL for thumbnail
-                try:
-                    if hasattr(obj.thumbnail, 'public_id'):
-                        cloud_name = getattr(obj.thumbnail, 'cloud_name', 'dddxxtr7o')
-                        version = getattr(obj.thumbnail, 'version', 'v1')
-                        format = getattr(obj.thumbnail, 'format', 'jpg')
-                        return f"https://res.cloudinary.com/{cloud_name}/image/upload/{version}/{obj.thumbnail.public_id}.{format}"
-                except:
-                    pass
-                
-                return f"https://res.cloudinary.com/dddxxtr7o/image/upload/{obj.thumbnail}"
-        
-        # If no thumbnail exists yet, return the full image URL
-        return self.get_image_url(obj)
+        """Generate thumbnail URL via Cloudinary transformation - no extra upload."""
+        if not obj.image:
+          return None
+        try:
+           image_url = str(obj.image.url)
+           # Insert transformation between /upload/ and the path
+           if '/upload/' in image_url:
+             return image_url.replace(
+                '/upload/',
+                '/upload/w_400,h_400,c_fill,g_auto,q_auto,f_auto/'
+            )
+           return image_url
+        except Exception as e:
+          print(f"Error getting thumbnail URL for {obj.id}: {e}")
+          return None
