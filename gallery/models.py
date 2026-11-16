@@ -177,17 +177,17 @@ class WeddingImage(models.Model):
         print(f"   ✅ Model saved (ID: {self.pk})")
         
         # ✅ Generate thumbnail for new images
-        if self.image and is_new and not self.thumbnail:
-            print(f"   🖼️ Generating thumbnail for new image...")
-            try:
-                # Use the improved thumbnail generation
-                self.generate_thumbnail_improved()
-                # Save just the thumbnail field
-                super().save(update_fields=['thumbnail'])
-                print(f"   ✅ Thumbnail generated and saved")
-            except Exception as e:
-                print(f"   ⚠️ Thumbnail generation failed: {e}")
-                # Don't crash if thumbnail fails - the main image is still saved
+        # if self.image and is_new and not self.thumbnail:
+        #     print(f"   🖼️ Generating thumbnail for new image...")
+        #     try:
+        #         # Use the improved thumbnail generation
+        #         self.generate_thumbnail_improved()
+        #         # Save just the thumbnail field
+        #         super().save(update_fields=['thumbnail'])
+        #         print(f"   ✅ Thumbnail generated and saved")
+        #     except Exception as e:
+        #         print(f"   ⚠️ Thumbnail generation failed: {e}")
+        #         # Don't crash if thumbnail fails - the main image is still saved
         
         # Delete old Cloudinary files after successful save
         if old_image_public_id:
@@ -390,12 +390,18 @@ class WeddingImage(models.Model):
 
     def thumbnail_preview(self):
         """
-        Method for admin to show thumbnail preview
+        Method for admin to show thumbnail preview dynamically
         """
-        thumb_url = self.get_thumbnail_url()
-        if thumb_url:
-            return f'<img src="{thumb_url}" width="100" height="100" style="object-fit: cover;" />'
-        return "No thumbnail"
-    
-    thumbnail_preview.allow_tags = True
-    thumbnail_preview.short_description = 'Thumbnail'
+        if self.image:
+            try:
+                # Get the full image URL
+                url = str(self.image.url)
+                # Inject the 100x100 transformation for the admin preview
+                if '/upload/' in url:
+                    thumb_url = url.replace('/upload/', '/upload/w_100,h_100,c_fill,g_auto,q_auto,f_auto/')
+                else:
+                    thumb_url = url
+                return f'<img src="{thumb_url}" width="100" height="100" style="object-fit: cover; border-radius: 5px;" />'
+            except Exception:
+                return "Error loading image"
+        return "No image"

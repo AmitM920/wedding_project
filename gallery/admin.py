@@ -28,19 +28,17 @@ class WeddingImageAdmin(admin.ModelAdmin):
     change_list_template = "admin/bulk_upload_button.html"
     readonly_fields = ["uploaded_at", "image_preview_large"]
     
-    # ✅ CRITICAL: Disable default delete action, use custom one
-    actions = ['delete_selected_custom', 'regenerate_thumbnails']
+    # ✅ FIXED: Removed the broken 'regenerate_thumbnails' action
+    actions = ['delete_selected_custom']
     
     # Custom delete action with Cloudinary cleanup
     def delete_selected_custom(self, request, queryset):
         """
         Custom delete action that shows confirmation and handles Cloudinary cleanup
         """
-        # Count before deletion
         count_before = queryset.count()
-        
-        # Delete each one (model's delete() method handles Cloudinary)
         deleted_count = 0
+        
         for obj in queryset:
             try:
                 # This will trigger the model's delete() method
@@ -60,61 +58,22 @@ class WeddingImageAdmin(admin.ModelAdmin):
                 messages.SUCCESS
             )
         
-        # Return None to stay on same page
         return None
     
     delete_selected_custom.short_description = "Delete selected images (with Cloudinary cleanup)"
     
-    def regenerate_thumbnails(self, request, queryset):
-        """Regenerate thumbnails for selected images"""
-        regenerated = 0
-        for obj in queryset:
-            if obj.image and not obj.thumbnail:
-                try:
-                    obj.generate_thumbnail_simple()
-                    obj.save(update_fields=['thumbnail'])
-                    regenerated += 1
-                except Exception as e:
-                    self.message_user(
-                        request,
-                        f"Error regenerating thumbnail for {obj.title}: {e}",
-                        messages.WARNING
-                    )
-        
-        if regenerated > 0:
-            self.message_user(
-                request,
-                f"✅ Regenerated thumbnails for {regenerated} images.",
-                messages.SUCCESS
-            )
-    
-    regenerate_thumbnails.short_description = "Regenerate thumbnails"
-    
-    def delete_queryset(self, request, queryset):
-        """
-        Handle bulk deletion from admin change list
-        This ensures model's delete() method is called for each object
-        """
-        count = queryset.count()
-        for obj in queryset:
-            # Call individual delete() to trigger Cloudinary cleanup
-            obj.delete()
-        
-        self.message_user(
-            request,
-            f"✅ Successfully deleted {count} images from database and Cloudinary.",
-            messages.SUCCESS
-        )
-
+    # ✅ FIXED: Check if the image exists, because thumbnails are now generated on-the-fly
     def has_thumbnail(self, obj):
-        return bool(obj.thumbnail)
+        return bool(obj.image)
     
     has_thumbnail.boolean = True
     has_thumbnail.short_description = "Has Thumb"
 
+    # ✅ FIXED: This generates the 50x50 preview dynamically from Cloudinary
     def image_preview(self, obj):
         if obj.image:
             try:
+                # Cloudinary builds the URL with the 50x50 transformation on the fly
                 url = obj.image.build_url(
                     width=50, height=50, crop="fill", gravity="auto", quality=80
                 )
