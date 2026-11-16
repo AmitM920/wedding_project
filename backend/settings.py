@@ -247,7 +247,7 @@ MIDDLEWARE = [
 ]
 
 # 4. CORS & CSRF: Locked down to your actual domains
-default_cors = "http://localhost:5173,http://127.0.0.1:5173,https://wedding-project-pink.vercel.app"
+default_cors = "http://localhost:5173,http://127.0.0.1:5173,https://dist-tawny-psi.vercel.app"
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS", default_cors).split(",")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default_cors).split(",")
 
